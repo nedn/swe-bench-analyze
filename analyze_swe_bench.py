@@ -23,88 +23,86 @@ def check_scc_installed():
 
 def get_loc_counts(repo_path):
     """Runs scc on the specific path and returns a dict of {Language: CodeCount}."""
-    try:
-        # Run scc outputs JSON which is easy to parse
-        result = subprocess.run(
-            ["scc", repo_path, "--format", "json"],
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        data = json.loads(result.stdout)
+    # Run scc outputs JSON which is easy to parse
+    result = subprocess.run(
+        ["scc", ".", "--format", "json"], # Run on current directory (.)
+        cwd=repo_path,
+        capture_output=True,
+        text=True,
+        check=True
+    )
+    data = json.loads(result.stdout)
 
-        # Parse result into a lookup dict
-        lang_stats = defaultdict(int)
-        for item in data:
-            lang_stats[item["Name"]] = item["Code"]
+    # Parse result into a lookup dict
+    lang_stats = defaultdict(int)
+    for item in data:
+        lang_stats[item["Name"]] = item["Code"]
 
-        return lang_stats
-    except subprocess.CalledProcessError as e:
-        print(f"Error running scc: {e}")
-        return {}
-    except json.JSONDecodeError:
-        print("Error parsing scc output")
-        return {}
+    return lang_stats
 
-def analyze_commit_in_temp(repo_name, commit_sha):
+def process_repository(repo_name, tasks, writer):
     """
-    Creates a temp dir, shallow fetches ONLY the specific commit,
-    runs analysis, and auto-cleans up.
+    Clones a repo once, then iterates through all associated tasks/commits.
     """
     repo_url = f"https://github.com/{repo_name}.git"
 
-    # Create a temporary directory that cleans itself up automatically
+    print(f"\n--- Processing Repo: {repo_name} ({len(tasks)} items) ---")
+
+    # Create a temporary directory for the repo
     with tempfile.TemporaryDirectory() as temp_dir:
-        try:
-            # 1. Initialize empty git repo
+        # 1. Clone the repository
+        # We use --filter=blob:none (Blobless Clone).
+        # This downloads the commit history (so we can checkout any SHA)
+        # but doesn't download file contents until we actually checkout.
+        # Much faster than a full clone.
+        print(f"  Cloning {repo_name}...")
+        subprocess.run(
+            ["git", "clone", "--filter=blob:none", repo_url, temp_dir],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+
+        # 2. Iterate through commits for this repo
+        for i, task in enumerate(tasks):
+            commit_sha = task['base_commit']
+            instance_id = task['instance_id']
+
+            print(f"  [{i+1}/{len(tasks)}] Checking out {commit_sha[:7]}...")
+
+            # Force checkout the specific commit
             subprocess.run(
-                ["git", "init"],
+                ["git", "checkout", "-f", commit_sha],
                 cwd=temp_dir,
                 check=True,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL
             )
 
-            # 2. Add remote
-            subprocess.run(
-                ["git", "remote", "add", "origin", repo_url],
-                cwd=temp_dir,
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
-            )
+            # 3. Run Analysis
+            stats = get_loc_counts(temp_dir)
 
-            # 3. Fetch ONLY the specific commit with depth 1 (Shallow Fetch)
-            # This avoids downloading the whole repo history
-            subprocess.run(
-                ["git", "fetch", "--depth", "1", "origin", commit_sha],
-                cwd=temp_dir,
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
-            )
+            # 4. Write to CSV immediately
+            csv_row = [instance_id, repo_name, commit_sha]
+            for lang in TARGET_LANGUAGES:
+                csv_row.append(stats.get(lang, 0))
 
-            # 4. Checkout the fetched content (FETCH_HEAD)
-            subprocess.run(
-                ["git", "checkout", "FETCH_HEAD"],
-                cwd=temp_dir,
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
-            )
+            writer.writerow(csv_row)
 
-            # 5. Run Analysis
-            return get_loc_counts(temp_dir)
-
-        except subprocess.CalledProcessError as e:
-            print(f"Git error for {repo_name} at {commit_sha}: {e}")
-            return {}
 
 def main():
     check_scc_installed()
 
     print("Loading SWE-bench Verified dataset...")
     dataset = load_dataset("princeton-nlp/SWE-bench_Verified", split="test")
+
+    # 1. Group data by Repository
+    print("Grouping tasks by repository...")
+    repo_groups = defaultdict(list)
+    for row in dataset:
+        repo_groups[row['repo']].append(row)
+
+    print(f"Found {len(repo_groups)} unique repositories across {len(dataset)} tasks.")
 
     # Prepare CSV Header
     header = ["swe_bench_test_id", "repo", "commit"] + TARGET_LANGUAGES
@@ -115,26 +113,10 @@ def main():
         writer = csv.writer(f)
         writer.writerow(header)
 
-        # Iterate through the dataset
-        for i, row in enumerate(dataset):
-            instance_id = row['instance_id']
-            repo = row['repo']
-            commit = row['base_commit']
-
-            print(f"[{i+1}/{len(dataset)}] Processing {instance_id} ({repo})...")
-
-            # Analyzes inside a temp dir and returns stats
-            stats = analyze_commit_in_temp(repo, commit)
-
-            if stats:
-                # Build CSV Row
-                csv_row = [instance_id, repo, commit]
-                for lang in TARGET_LANGUAGES:
-                    count = stats.get(lang, 0)
-                    csv_row.append(count)
-
-                writer.writerow(csv_row)
-                f.flush()
+        # 2. Iterate through each repository group
+        for repo_name, tasks in repo_groups.items():
+            process_repository(repo_name, tasks, writer)
+            f.flush()
 
     print("\nDone! Analysis complete.")
 
