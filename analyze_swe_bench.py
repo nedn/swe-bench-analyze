@@ -100,7 +100,7 @@ def process_repository(repo_name, tasks, writer):
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze LOC statistics for SWE-bench datasets.")
-    parser.add_argument("--type", choices=["verified", "multilingual"], default="verified", help="Type of SWE-bench dataset to use.")
+    parser.add_argument("--type", choices=["verified", "multilingual", "pro"], default="verified", help="Type of SWE-bench dataset to use.")
     args = parser.parse_args()
 
     dataset_name = "princeton-nlp/SWE-bench_Verified"
@@ -109,6 +109,9 @@ def main():
     if args.type == "multilingual":
         dataset_name = "SWE-bench/SWE-bench_Multilingual"
         output_file = "swe_bench_multilingual_loc_stats.csv"
+    elif args.type == "pro":
+        dataset_name = "ScaleAI/SWE-bench_Pro"
+        output_file = "swe_bench_pro_loc_stats.csv"
 
     check_scc_installed()
 
