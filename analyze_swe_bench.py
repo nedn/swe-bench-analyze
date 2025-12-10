@@ -34,7 +34,6 @@ def get_loc_counts(repo_path):
     assert os.path.exists(repo_path), f"Repo path {repo_path} does not exist"
     assert os.path.isdir(repo_path), f"Repo path {repo_path} is not a directory"
     assert os.listdir(repo_path), f"Repo path {repo_path} is empty"
-    print(f"Running scc command: ['scc', '{repo_path}', '--format', 'json']")
     # Run scc outputs JSON which is easy to parse
     result = subprocess.run(
         ["scc", repo_path, "--format", "json"],
@@ -56,55 +55,69 @@ def get_loc_counts(repo_path):
 
     return lang_stats
 
-def process_repository(repo_name, tasks, writer):
+import concurrent.futures
+
+def process_repository(repo_name, tasks):
     """
     Clones a repo once, then iterates through all associated tasks/commits.
+    Returns a list of dicts: {'instance_id': ..., 'repo': ..., 'commit': ..., 'stats': ...}
     """
     repo_url = f"https://github.com/{repo_name}.git"
+    results = []
 
-    print(f"\n--- Processing Repo: {repo_name} ({len(tasks)} items) ---")
+    print(f"Processing Repo: {repo_name} ({len(tasks)} items)")
 
     # Create a temporary directory for the repo
-    with tempfile.TemporaryDirectory(dir=os.getcwd()) as temp_dir:
-        # 1. Clone the repository
-        # We use --filter=blob:none (Blobless Clone).
-        # This downloads the commit history (so we can checkout any SHA)
-        # but doesn't download file contents until we actually checkout.
-        # Much faster than a full clone.
-        print(f"  Cloning {repo_name}...")
-        subprocess.run(
-            ["git", "clone", "--filter=blob:none", repo_url, temp_dir],
-            check=True
-        )
-
-        # 2. Iterate through commits for this repo
-        for i, task in enumerate(tasks):
-            commit_sha = task['base_commit']
-            instance_id = task['instance_id']
-
-            print(f"  [{i+1}/{len(tasks)}] Checking out {commit_sha[:7]}...")
-
-            # Force checkout the specific commit
+    # Use a unique prefix to avoid collisions in parallel execution
+    prefix = repo_name.replace("/", "_") + "_"
+    with tempfile.TemporaryDirectory(dir=os.getcwd(), prefix=prefix) as temp_dir:
+        try:
+            # 1. Clone the repository
+            # We use --filter=blob:none (Blobless Clone).
+            # This downloads the commit history (so we can checkout any SHA)
+            # but doesn't download file contents until we actually checkout.
+            # Much faster than a full clone.
             subprocess.run(
-                ["git", "checkout", "-f", commit_sha],
-                cwd=temp_dir,
-                check=True
+                ["git", "clone", "--filter=blob:none", repo_url, temp_dir],
+                check=True,
+                capture_output=True # Silence git output to avoid messy logs
             )
 
-            # 3. Run Analysis
-            stats = get_loc_counts(temp_dir)
+            # 2. Iterate through commits for this repo
+            for task in tasks:
+                commit_sha = task['base_commit']
+                instance_id = task['instance_id']
 
-            # 4. Write to CSV immediately
-            csv_row = [instance_id, repo_name, commit_sha]
-            for lang in TARGET_LANGUAGES:
-                csv_row.append(stats.get(lang, 0))
-            print(stats)
-            writer.writerow(csv_row)
+                # print(f"  Checking out {commit_sha[:7]} for {instance_id}...")
 
+                # Force checkout the specific commit
+                subprocess.run(
+                    ["git", "checkout", "-f", commit_sha],
+                    cwd=temp_dir,
+                    check=True,
+                    capture_output=True
+                )
+
+                # 3. Run Analysis
+                stats = get_loc_counts(temp_dir)
+
+                results.append({
+                    "instance_id": instance_id,
+                    "repo": repo_name,
+                    "commit": commit_sha,
+                    "stats": stats
+                })
+        except subprocess.CalledProcessError as e:
+            print(f"Error processing {repo_name}: {e}")
+            # Optionally return partial results or raise
+
+    print(f"Finished {repo_name}")
+    return results
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze LOC statistics for SWE-bench datasets.")
     parser.add_argument("--eval-set", choices=["verified", "multilingual", "pro"], default="verified", help="Type of SWE-bench dataset to use.")
+    parser.add_argument("--max-workers", type=int, default=8, help="Number of parallel workers.")
     args = parser.parse_args()
 
     if args.eval_set == "verified":
@@ -130,21 +143,56 @@ def main():
 
     print(f"Found {len(repo_groups)} unique repositories across {len(dataset)} tasks.")
 
-    # Prepare CSV Header
-    header = ["swe_bench_test_id", "repo", "commit"] + TARGET_LANGUAGES
+    # Prepare results map
+    results_map = {} # instance_id -> result_dict
 
-    print(f"Starting analysis. Output will be saved to {output_file}")
+    # 2. Parallel Processing
+    print(f"Starting parallel analysis with {args.max_workers} workers...")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=args.max_workers) as executor:
+        future_to_repo = {
+            executor.submit(process_repository, repo_name, tasks): repo_name
+            for repo_name, tasks in repo_groups.items()
+        }
+
+        finished_count = 0
+        total_repos = len(repo_groups)
+
+        for future in concurrent.futures.as_completed(future_to_repo):
+            repo_name = future_to_repo[future]
+            try:
+                repo_results = future.result()
+                for res in repo_results:
+                    results_map[res['instance_id']] = res
+                finished_count += 1
+                print(f"Progress: {finished_count}/{total_repos} repos processed.")
+            except Exception as exc:
+                print(f'{repo_name} generated an exception: {exc}')
+
+    # 3. Write to CSV in order
+    print(f"Writing results to {output_file}...")
+    header = ["swe_bench_test_id", "repo", "commit"] + TARGET_LANGUAGES
 
     with open(output_file, mode='w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow(header)
-        i = 0
-        # 2. Iterate through each repository group
-        for repo_name, tasks in repo_groups.items():
-            i += 1
-            print(f"Processing repository {i}/{len(repo_groups)}: {repo_name}")
-            process_repository(repo_name, tasks, writer)
-            f.flush()
+
+        count_missing = 0
+        for row in dataset:
+            instance_id = row['instance_id']
+            if instance_id in results_map:
+                res = results_map[instance_id]
+                stats = res['stats']
+                csv_row = [instance_id, res['repo'], res['commit']]
+                for lang in TARGET_LANGUAGES:
+                    csv_row.append(stats.get(lang, 0))
+                writer.writerow(csv_row)
+            else:
+                print(f"Warning: Missing results for {instance_id}")
+                count_missing += 1
+
+        if count_missing > 0:
+            print(f"Total missing: {count_missing}")
 
     print("\nDone! Analysis complete.")
 
