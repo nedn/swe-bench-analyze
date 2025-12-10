@@ -6,6 +6,7 @@ import shutil
 import tempfile
 from collections import defaultdict
 from datasets import load_dataset
+import argparse
 
 # Configuration
 OUTPUT_FILE = "swe_bench_loc_stats.csv"
@@ -91,10 +92,21 @@ def process_repository(repo_name, tasks, writer):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Analyze LOC statistics for SWE-bench datasets.")
+    parser.add_argument("--type", choices=["verified", "multilingual"], default="verified", help="Type of SWE-bench dataset to use.")
+    args = parser.parse_args()
+
+    dataset_name = "princeton-nlp/SWE-bench_Verified"
+    output_file = OUTPUT_FILE
+
+    if args.type == "multilingual":
+        dataset_name = "SWE-bench/SWE-bench_Multilingual"
+        output_file = "swe_bench_multilingual_loc_stats.csv"
+
     check_scc_installed()
 
-    print("Loading SWE-bench Verified dataset...")
-    dataset = load_dataset("princeton-nlp/SWE-bench_Verified", split="test")
+    print(f"Loading {dataset_name} dataset...")
+    dataset = load_dataset(dataset_name, split="test")
 
     # 1. Group data by Repository
     print("Grouping tasks by repository...")
@@ -107,9 +119,9 @@ def main():
     # Prepare CSV Header
     header = ["swe_bench_test_id", "repo", "commit"] + TARGET_LANGUAGES
 
-    print(f"Starting analysis. Output will be saved to {OUTPUT_FILE}")
+    print(f"Starting analysis. Output will be saved to {output_file}")
 
-    with open(OUTPUT_FILE, mode='w', newline='', encoding='utf-8') as f:
+    with open(output_file, mode='w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow(header)
 
