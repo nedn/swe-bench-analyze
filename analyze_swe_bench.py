@@ -11,7 +11,8 @@ import argparse
 # Configuration
 OUTPUT_FILE = "swe_bench_loc_stats.csv"
 TARGET_LANGUAGES = [
-    "C", "C++", "Java", "Kotlin", "Python", "Go", "Rust", "JavaScript", "HTML"
+    "C", "C++", "Java", "Kotlin", "Python", "Go", "Rust", "JavaScript", "HTML",
+    "Ruby", "TypeScript", "PHP", 
 ]
 
 def check_scc_installed():
@@ -44,8 +45,6 @@ def get_loc_counts(repo_path):
     )
     data = json.loads(result.stdout)
 
-    print("SCC Result:", data)
-
     # Parse result into a lookup dict
     lang_stats = defaultdict(int)
     for item in data:
@@ -62,7 +61,7 @@ def process_repository(repo_name, tasks, writer):
     print(f"\n--- Processing Repo: {repo_name} ({len(tasks)} items) ---")
 
     # Create a temporary directory for the repo
-    with tempfile.TemporaryDirectory() as temp_dir:
+    with tempfile.TemporaryDirectory(dir=os.getcwd()) as temp_dir:
         # 1. Clone the repository
         # We use --filter=blob:none (Blobless Clone).
         # This downloads the commit history (so we can checkout any SHA)
@@ -132,9 +131,11 @@ def main():
     with open(output_file, mode='w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow(header)
-
+        i = 0
         # 2. Iterate through each repository group
         for repo_name, tasks in repo_groups.items():
+            i += 1
+            print(f"Processing repository {i}/{len(repo_groups)}: {repo_name}")
             process_repository(repo_name, tasks, writer)
             f.flush()
 
