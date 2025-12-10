@@ -47,7 +47,12 @@ def get_loc_counts(repo_path):
     # Parse result into a lookup dict
     lang_stats = defaultdict(int)
     for item in data:
-        lang_stats[item["Name"]] = item["Code"]
+        lang_name = item["Name"]
+        if lang_name == "C Header":
+            lang_name = "C"
+        elif lang_name == "C++ Header":
+            lang_name = "C++"
+        lang_stats[lang_name] += item["Code"]
 
     return lang_stats
 
@@ -99,16 +104,16 @@ def process_repository(repo_name, tasks, writer):
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze LOC statistics for SWE-bench datasets.")
-    parser.add_argument("--type", choices=["verified", "multilingual", "pro"], default="verified", help="Type of SWE-bench dataset to use.")
+    parser.add_argument("--eval-set", choices=["verified", "multilingual", "pro"], default="verified", help="Type of SWE-bench dataset to use.")
     args = parser.parse_args()
 
-    if args.type == "verified":
+    if args.eval_set == "verified":
       dataset_name = "SWE-bench/SWE-bench_Verified"
       output_file = "swe_bench_verified_loc_stats.csv"
-    elif args.type == "multilingual":
+    elif args.eval_set == "multilingual":
         dataset_name = "SWE-bench/SWE-bench_Multilingual"
         output_file = "swe_bench_multilingual_loc_stats.csv"
-    elif args.type == "pro":
+    elif args.eval_set == "pro":
         dataset_name = "ScaleAI/SWE-bench_Pro"
         output_file = "swe_bench_pro_loc_stats.csv"
 
