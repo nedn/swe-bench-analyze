@@ -16,7 +16,14 @@ TARGET_LANGUAGES = [
 
 def check_scc_installed():
     """Verifies that scc is installed and accessible."""
-    if shutil.which("scc") is None:
+    result = subprocess.run(
+        ["scc", "--version"],
+        capture_output=True,
+        text=True,
+        check=True
+    )
+    print("SCC Version:", result.stdout.strip())
+    if not result.returncode == 0:
         raise EnvironmentError(
             "The 'scc' tool is not found in your PATH. "
             "Please install it before running this script."
