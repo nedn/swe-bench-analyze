@@ -9,10 +9,9 @@ from datasets import load_dataset
 import argparse
 
 # Configuration
-OUTPUT_FILE = "swe_bench_loc_stats.csv"
 TARGET_LANGUAGES = [
     "C", "C++", "Java", "Kotlin", "Python", "Go", "Rust", "JavaScript", "HTML",
-    "Ruby", "TypeScript", "PHP", 
+    "Ruby", "TypeScript", "PHP",
 ]
 
 def check_scc_installed():
@@ -103,10 +102,10 @@ def main():
     parser.add_argument("--type", choices=["verified", "multilingual", "pro"], default="verified", help="Type of SWE-bench dataset to use.")
     args = parser.parse_args()
 
-    dataset_name = "princeton-nlp/SWE-bench_Verified"
-    output_file = OUTPUT_FILE
-
-    if args.type == "multilingual":
+    if args.type == "verified":
+      dataset_name = "SWE-bench/SWE-bench_Verified"
+      output_file = "swe_bench_verified_loc_stats.csv"
+    elif args.type == "multilingual":
         dataset_name = "SWE-bench/SWE-bench_Multilingual"
         output_file = "swe_bench_multilingual_loc_stats.csv"
     elif args.type == "pro":
