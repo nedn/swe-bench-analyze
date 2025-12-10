@@ -24,15 +24,20 @@ def check_scc_installed():
 
 def get_loc_counts(repo_path):
     """Runs scc on the specific path and returns a dict of {Language: CodeCount}."""
+    assert os.path.exists(repo_path), f"Repo path {repo_path} does not exist"
+    assert os.path.isdir(repo_path), f"Repo path {repo_path} is not a directory"
+    assert os.listdir(repo_path), f"Repo path {repo_path} is empty"
+    print(f"Running scc command: ['scc', '{repo_path}', '--format', 'json']")
     # Run scc outputs JSON which is easy to parse
     result = subprocess.run(
-        ["scc", ".", "--format", "json"], # Run on current directory (.)
-        cwd=repo_path,
+        ["scc", repo_path, "--format", "json"],
         capture_output=True,
         text=True,
         check=True
     )
     data = json.loads(result.stdout)
+
+    print("SCC Result:", data)
 
     # Parse result into a lookup dict
     lang_stats = defaultdict(int)
@@ -59,9 +64,7 @@ def process_repository(repo_name, tasks, writer):
         print(f"  Cloning {repo_name}...")
         subprocess.run(
             ["git", "clone", "--filter=blob:none", repo_url, temp_dir],
-            check=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
+            check=True
         )
 
         # 2. Iterate through commits for this repo
@@ -75,9 +78,7 @@ def process_repository(repo_name, tasks, writer):
             subprocess.run(
                 ["git", "checkout", "-f", commit_sha],
                 cwd=temp_dir,
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
+                check=True
             )
 
             # 3. Run Analysis
@@ -87,7 +88,7 @@ def process_repository(repo_name, tasks, writer):
             csv_row = [instance_id, repo_name, commit_sha]
             for lang in TARGET_LANGUAGES:
                 csv_row.append(stats.get(lang, 0))
-
+            print(stats)
             writer.writerow(csv_row)
 
 
