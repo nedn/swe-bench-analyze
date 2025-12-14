@@ -1,10 +1,7 @@
 import csv
 import os
+import argparse
 from datasets import load_dataset
-
-# Configuration
-INPUT_FILE = "swe_bench_loc_stats.csv"
-OUTPUT_FILE = "swe_bench_loc_stats_augmented.csv"
 
 def parse_patch_stats(patch_text):
     """
@@ -30,22 +27,43 @@ def parse_patch_stats(patch_text):
 
     return added, removed
 
-def main():
-    if not os.path.exists(INPUT_FILE):
-        print(f"Error: {INPUT_FILE} not found. Please run the previous script first.")
+def process_eval_set(eval_set):
+    """
+    Process a single eval set: load dataset, read corresponding CSV, and augment it.
+    """
+    # Map eval_set to dataset name and file names (matching analyze_swe_bench.py)
+    if eval_set == "verified":
+        dataset_name = "SWE-bench/SWE-bench_Verified"
+        input_file = "swe_bench_verified_loc_stats.csv"
+        output_file = "swe_bench_verified_loc_stats_augmented.csv"
+    elif eval_set == "multilingual":
+        dataset_name = "SWE-bench/SWE-bench_Multilingual"
+        input_file = "swe_bench_multilingual_loc_stats.csv"
+        output_file = "swe_bench_multilingual_loc_stats_augmented.csv"
+    elif eval_set == "pro":
+        dataset_name = "ScaleAI/SWE-bench_Pro"
+        input_file = "swe_bench_pro_loc_stats.csv"
+        output_file = "swe_bench_pro_loc_stats_augmented.csv"
+    else:
+        raise ValueError(f"Unknown eval_set: {eval_set}")
+
+    if not os.path.exists(input_file):
+        print(f"Warning: {input_file} not found. Skipping {eval_set}.")
         return
 
-    print("Loading SWE-bench Verified dataset to retrieve patches...")
-    # Loading the same split used in the original script
-    dataset = load_dataset("princeton-nlp/SWE-bench_Verified", split="test")
+    print(f"\n{'='*60}")
+    print(f"Processing {eval_set.upper()} eval set")
+    print(f"{'='*60}")
+    print(f"Loading {dataset_name} dataset to retrieve patches...")
+    dataset = load_dataset(dataset_name, split="test")
 
     # Create a quick lookup dictionary: instance_id -> patch_content
     print("Creating patch lookup table...")
     patch_lookup = {item['instance_id']: item['patch'] for item in dataset}
 
-    print(f"Reading {INPUT_FILE} and appending data...")
+    print(f"Reading {input_file} and appending data...")
 
-    with open(INPUT_FILE, mode='r', newline='', encoding='utf-8') as infile:
+    with open(input_file, mode='r', newline='', encoding='utf-8') as infile:
         reader = csv.DictReader(infile)
         fieldnames = reader.fieldnames
 
@@ -53,7 +71,7 @@ def main():
         new_cols = ['golden_patch_added', 'golden_patch_deleted', 'golden_patch_total']
 
         # Prepare output file
-        with open(OUTPUT_FILE, mode='w', newline='', encoding='utf-8') as outfile:
+        with open(output_file, mode='w', newline='', encoding='utf-8') as outfile:
             writer = csv.DictWriter(outfile, fieldnames=fieldnames + new_cols)
             writer.writeheader()
 
@@ -78,8 +96,30 @@ def main():
                 writer.writerow(row)
                 rows_processed += 1
 
-    print(f"Done! Augmented data saved to {OUTPUT_FILE}")
-    print(f"Processed {rows_processed} rows.")
+    print(f"Done! Augmented data saved to {output_file}")
+    print(f"Processed {rows_processed} rows for {eval_set}.")
+
+def main():
+    parser = argparse.ArgumentParser(description="Augment SWE-bench LOC stats CSV files with patch statistics.")
+    parser.add_argument(
+        "--eval-set",
+        choices=["verified", "multilingual", "pro", "all"],
+        default="all",
+        help="Type of SWE-bench dataset to process. Use 'all' to process all available CSV files."
+    )
+    args = parser.parse_args()
+
+    if args.eval_set == "all":
+        # Process all eval sets
+        eval_sets = ["verified", "multilingual", "pro"]
+        for eval_set in eval_sets:
+            process_eval_set(eval_set)
+        print(f"\n{'='*60}")
+        print("All eval sets processed!")
+        print(f"{'='*60}")
+    else:
+        # Process single eval set
+        process_eval_set(args.eval_set)
 
 if __name__ == "__main__":
     main()
