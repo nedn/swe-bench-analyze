@@ -96,7 +96,41 @@ def analyze_benchmark(name: str, df: pd.DataFrame) -> dict:
         "total": compute_stats(df["golden_patch_total"]),
     }
 
+    # Repository-level stats
+    results["repositories"] = analyze_repositories(df, lang_cols)
+
     return results
+
+
+def analyze_repositories(df: pd.DataFrame, lang_cols: list[str]) -> list[dict]:
+    """Analyze stats per repository."""
+    repos = []
+    for repo_name, repo_df in df.groupby("repo"):
+        # Get main languages (top 3 by max LOC across tasks)
+        lang_max = {lang: repo_df[lang].max() for lang in lang_cols}
+        sorted_langs = sorted(lang_max.items(), key=lambda x: x[1], reverse=True)
+        main_langs = [lang for lang, loc in sorted_langs[:3] if loc > 0]
+
+        # Max repo size (max total_loc across all tasks for this repo)
+        max_repo_size = repo_df["total_loc"].max()
+
+        # Number of tasks
+        task_count = len(repo_df)
+
+        # Median task complexity (median of golden_patch_total)
+        median_complexity = repo_df["golden_patch_total"].median()
+
+        repos.append({
+            "name": repo_name,
+            "main_languages": main_langs,
+            "max_repo_size": max_repo_size,
+            "task_count": task_count,
+            "median_complexity": median_complexity,
+        })
+
+    # Sort by task count descending
+    repos.sort(key=lambda x: x["task_count"], reverse=True)
+    return repos
 
 
 def format_number(val, decimals=1) -> str:
@@ -311,6 +345,19 @@ def generate_markdown_report(all_results: list[dict], output_path: Path):
                 f"| {metric_name} | {s['mean']:.1f} | {s['median']:.0f} | "
                 f"{s['std']:.1f} | {s['min']:.0f} | {s['25%']:.0f} | "
                 f"{s['75%']:.0f} | {s['max']:.0f} |"
+            )
+        lines.append("")
+
+        # Repositories
+        lines.append("### Repositories\n")
+        lines.append("| Repository | Main Languages | Max Repo Size | Tasks | Median Complexity |")
+        lines.append("|------------|----------------|---------------|-------|-------------------|")
+        for repo in res["repositories"]:
+            langs_str = ", ".join(repo["main_languages"]) if repo["main_languages"] else "N/A"
+            lines.append(
+                f"| {repo['name']} | {langs_str} | "
+                f"{format_number(repo['max_repo_size'])} | {repo['task_count']} | "
+                f"{repo['median_complexity']:.0f} |"
             )
         lines.append("")
 
