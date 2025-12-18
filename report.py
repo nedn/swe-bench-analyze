@@ -61,13 +61,20 @@ def analyze_benchmark(name: str, df: pd.DataFrame) -> dict:
     # Repository size stats
     results["repo_size_stats"] = compute_stats(df["total_loc"])
 
-    # LOC stats by language
+    # LOC stats by language (filter out languages < 2% of total codebase)
+    total_loc_all_langs = df[lang_cols].sum().sum()
     loc_by_lang = {}
     for lang in lang_cols:
+        lang_total_loc = df[lang].sum()
+        lang_percentage = (lang_total_loc / total_loc_all_langs * 100) if total_loc_all_langs > 0 else 0
+        # Skip languages that contribute less than 2% of total codebase
+        if lang_percentage < 2:
+            continue
         tasks_with_code = df[df[lang] > 0]
         if len(tasks_with_code) > 0:
             loc_by_lang[lang] = {
                 "tasks_with_code": len(tasks_with_code),
+                "percentage": lang_percentage,
                 **compute_stats(tasks_with_code[lang]),
             }
     results["loc_by_language"] = loc_by_lang
@@ -164,20 +171,20 @@ def print_benchmark_report(results: dict):
     print(f"  Mean: {format_number(stats['mean']):>10}  |  Median: {format_number(stats['median']):>10}  |  Std: {format_number(stats['std']):>10}")
     print(f"  Min:  {format_number(stats['min']):>10}  |  25%:    {format_number(stats['25%']):>10}  |  75%: {format_number(stats['75%']):>10}  |  Max: {format_number(stats['max']):>10}")
 
-    # LOC Stats by Language
-    print(f"\n--- LOC Stats by Language ---")
-    print(f"  {'Language':<12} {'Tasks':>7} {'Mean':>10} {'Median':>10} {'Std':>10} {'Min':>8} {'Max':>10}")
-    print(f"  {'-'*12} {'-'*7} {'-'*10} {'-'*10} {'-'*10} {'-'*8} {'-'*10}")
+    # LOC Stats by Language (only languages >= 2% of total codebase)
+    print(f"\n--- LOC Stats by Language (>= 2% of codebase) ---")
+    print(f"  {'Language':<12} {'%':>6} {'Tasks':>7} {'Mean':>10} {'Median':>10} {'Std':>10} {'Min':>8} {'Max':>10}")
+    print(f"  {'-'*12} {'-'*6} {'-'*7} {'-'*10} {'-'*10} {'-'*10} {'-'*8} {'-'*10}")
 
-    # Sort by task count descending
+    # Sort by percentage descending
     sorted_langs = sorted(
         results["loc_by_language"].items(),
-        key=lambda x: x[1]["tasks_with_code"],
+        key=lambda x: x[1]["percentage"],
         reverse=True,
     )
     for lang, stats in sorted_langs:
         print(
-            f"  {lang:<12} {stats['tasks_with_code']:>7} "
+            f"  {lang:<12} {stats['percentage']:>5.1f}% {stats['tasks_with_code']:>7} "
             f"{format_number(stats['mean']):>10} {format_number(stats['median']):>10} "
             f"{format_number(stats['std']):>10} {format_number(stats['min']):>8} "
             f"{format_number(stats['max']):>10}"
@@ -274,14 +281,22 @@ def generate_markdown_report(all_results: list[dict], output_path: Path):
 
     # Summary table
     lines.append("## Summary\n")
-    lines.append("| Benchmark | Tasks | Repo LOC (mean) | Patch Total (mean) | Patch Total (median) |")
-    lines.append("|-----------|-------|-----------------|--------------------|--------------------|")
+    lines.append("| Benchmark | Tasks | Repo LOC (mean) | Patch Total (mean) | Patch Total (median) | Main Languages |")
+    lines.append("|-----------|-------|-----------------|--------------------|--------------------|----------------|")
     for res in all_results:
+        # Get top 3 languages by percentage of LOC
+        sorted_langs = sorted(
+            res["loc_by_language"].items(),
+            key=lambda x: x[1]["percentage"],
+            reverse=True,
+        )[:3]
+        main_langs = ", ".join([f"{lang} ({stats['percentage']:.1f}%)" for lang, stats in sorted_langs])
         lines.append(
             f"| {res['name']} | {res['task_count']} | "
             f"{format_number(res['repo_size_stats']['mean'])} | "
             f"{res['patch_overall']['total']['mean']:.1f} | "
-            f"{res['patch_overall']['total']['median']:.0f} |"
+            f"{res['patch_overall']['total']['median']:.0f} | "
+            f"{main_langs} |"
         )
     lines.append("")
 
@@ -304,18 +319,18 @@ def generate_markdown_report(all_results: list[dict], output_path: Path):
         lines.append(f"| Max | {format_number(stats['max'])} |")
         lines.append("")
 
-        # LOC by Language
-        lines.append("### LOC Stats by Language\n")
-        lines.append("| Language | Tasks w/ Code | Mean | Median | Std | Min | Max |")
-        lines.append("|----------|---------------|------|--------|-----|-----|-----|")
+        # LOC by Language (only languages >= 2% of total codebase)
+        lines.append("### LOC Stats by Language (>= 2% of codebase)\n")
+        lines.append("| Language | % | Tasks w/ Code | Mean | Median | Std | Min | Max |")
+        lines.append("|----------|---|---------------|------|--------|-----|-----|-----|")
         sorted_langs = sorted(
             res["loc_by_language"].items(),
-            key=lambda x: x[1]["tasks_with_code"],
+            key=lambda x: x[1]["percentage"],
             reverse=True,
         )
         for lang, stats in sorted_langs:
             lines.append(
-                f"| {lang} | {stats['tasks_with_code']} | "
+                f"| {lang} | {stats['percentage']:.1f}% | {stats['tasks_with_code']} | "
                 f"{format_number(stats['mean'])} | {format_number(stats['median'])} | "
                 f"{format_number(stats['std'])} | {format_number(stats['min'])} | "
                 f"{format_number(stats['max'])} |"

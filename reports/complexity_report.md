@@ -4,13 +4,13 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 
 ## Summary
 
-| Benchmark | Tasks | Repo LOC (mean) | Patch Total (mean) | Patch Total (median) |
-|-----------|-------|-----------------|--------------------|--------------------|
-| multi_swe_bench | 1632 | 180.3K | 163.2 | 33 |
-| swe_bench_multilingual | 300 | 169.2K | 47.8 | 10 |
-| swe_bench_pro | 731 | 266.5K | 169.6 | 94 |
-| swe_bench_verified | 500 | 290.2K | 14.3 | 7 |
-| swe_lancer | 198 | 536.8K | 33.4 | 14 |
+| Benchmark | Tasks | Repo LOC (mean) | Patch Total (mean) | Patch Total (median) | Main Languages |
+|-----------|-------|-----------------|--------------------|--------------------|----------------|
+| multi_swe_bench | 1632 | 180.3K | 163.2 | 33 | JavaScript (38.2%), HTML (24.6%), Go (12.1%) |
+| swe_bench_multilingual | 300 | 169.2K | 47.8 | 10 | Java (30.6%), PHP (17.2%), Ruby (10.7%) |
+| swe_bench_pro | 731 | 266.5K | 169.6 | 94 | Go (43.9%), Python (22.8%), TypeScript (22.0%) |
+| swe_bench_verified | 500 | 290.2K | 14.3 | 7 | Python (90.2%), JavaScript (4.4%), C (4.0%) |
+| swe_lancer | 198 | 536.8K | 33.4 | 14 | TypeScript (55.9%), JavaScript (43.8%) |
 
 ## multi_swe_bench
 
@@ -28,22 +28,18 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 | 75th Percentile | 109.0K |
 | Max | 7.8M |
 
-### LOC Stats by Language
+### LOC Stats by Language (>= 2% of codebase)
 
-| Language | Tasks w/ Code | Mean | Median | Std | Min | Max |
-|----------|---------------|------|--------|-----|-----|-----|
-| HTML | 777 | 93.3K | 408.0 | 792.2K | 1 | 7.7M |
-| JavaScript | 768 | 146.3K | 65.3K | 217.3K | 1 | 661.7K |
-| TypeScript | 515 | 57.3K | 4.5K | 69.7K | 38 | 249.4K |
-| Go | 481 | 74.0K | 76.1K | 49.3K | 62 | 158.8K |
-| Python | 348 | 1.2K | 941.5 | 1.6K | 3 | 6.9K |
-| C | 305 | 33.9K | 27.0K | 29.8K | 14 | 100.7K |
-| C++ | 253 | 30.4K | 23.6K | 24.2K | 122 | 98.0K |
-| Rust | 239 | 48.0K | 38.9K | 41.8K | 3.0K | 229.6K |
-| Java | 138 | 90.3K | 61.4K | 80.9K | 69 | 418.9K |
-| Ruby | 87 | 22.1K | 146.0 | 25.2K | 15 | 53.4K |
-| Kotlin | 27 | 535.1 | 153.0 | 535.0 | 133 | 1.5K |
-| PHP | 10 | 165.0 | 165.0 | 0.0 | 165 | 165 |
+| Language | % | Tasks w/ Code | Mean | Median | Std | Min | Max |
+|----------|---|---------------|------|--------|-----|-----|-----|
+| JavaScript | 38.2% | 768 | 146.3K | 65.3K | 217.3K | 1 | 661.7K |
+| HTML | 24.6% | 777 | 93.3K | 408.0 | 792.2K | 1 | 7.7M |
+| Go | 12.1% | 481 | 74.0K | 76.1K | 49.3K | 62 | 158.8K |
+| TypeScript | 10.0% | 515 | 57.3K | 4.5K | 69.7K | 38 | 249.4K |
+| Java | 4.2% | 138 | 90.3K | 61.4K | 80.9K | 69 | 418.9K |
+| Rust | 3.9% | 239 | 48.0K | 38.9K | 41.8K | 3.0K | 229.6K |
+| C | 3.5% | 305 | 33.9K | 27.0K | 29.8K | 14 | 100.7K |
+| C++ | 2.6% | 253 | 30.4K | 23.6K | 24.2K | 122 | 98.0K |
 
 ### Patch Complexity by Primary Language
 
@@ -127,22 +123,20 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 | 75th Percentile | 212.4K |
 | Max | 1.3M |
 
-### LOC Stats by Language
+### LOC Stats by Language (>= 2% of codebase)
 
-| Language | Tasks w/ Code | Mean | Median | Std | Min | Max |
-|----------|---------------|------|--------|-----|-----|-----|
-| HTML | 205 | 6.5K | 575.0 | 38.1K | 18 | 328.3K |
-| JavaScript | 183 | 16.5K | 230.0 | 52.0K | 1 | 362.5K |
-| Python | 85 | 15.6K | 1.2K | 35.9K | 39 | 128.6K |
-| Ruby | 78 | 69.8K | 17.3K | 85.7K | 2 | 224.1K |
-| PHP | 69 | 126.4K | 166.3K | 102.7K | 3 | 264.3K |
-| TypeScript | 67 | 26.7K | 2.6K | 37.8K | 221 | 116.5K |
-| Java | 57 | 272.5K | 90.1K | 386.5K | 69 | 1.2M |
-| C | 56 | 70.7K | 28.9K | 83.9K | 12 | 214.5K |
-| Go | 49 | 99.8K | 53.9K | 113.3K | 117 | 398.3K |
-| Rust | 43 | 104.2K | 83.3K | 95.1K | 3.1K | 261.1K |
-| C++ | 41 | 6.3K | 402.0 | 10.4K | 27 | 45.7K |
-| Kotlin | 7 | 134.0 | 134.0 | 0.0 | 134 | 134 |
+| Language | % | Tasks w/ Code | Mean | Median | Std | Min | Max |
+|----------|---|---------------|------|--------|-----|-----|-----|
+| Java | 30.6% | 57 | 272.5K | 90.1K | 386.5K | 69 | 1.2M |
+| PHP | 17.2% | 69 | 126.4K | 166.3K | 102.7K | 3 | 264.3K |
+| Ruby | 10.7% | 78 | 69.8K | 17.3K | 85.7K | 2 | 224.1K |
+| Go | 9.6% | 49 | 99.8K | 53.9K | 113.3K | 117 | 398.3K |
+| Rust | 8.8% | 43 | 104.2K | 83.3K | 95.1K | 3.1K | 261.1K |
+| C | 7.8% | 56 | 70.7K | 28.9K | 83.9K | 12 | 214.5K |
+| JavaScript | 6.0% | 183 | 16.5K | 230.0 | 52.0K | 1 | 362.5K |
+| TypeScript | 3.5% | 67 | 26.7K | 2.6K | 37.8K | 221 | 116.5K |
+| HTML | 2.6% | 205 | 6.5K | 575.0 | 38.1K | 18 | 328.3K |
+| Python | 2.6% | 85 | 15.6K | 1.2K | 35.9K | 39 | 128.6K |
 
 ### Patch Complexity by Primary Language
 
@@ -228,21 +222,15 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 | 75th Percentile | 228.5K |
 | Max | 2.0M |
 
-### LOC Stats by Language
+### LOC Stats by Language (>= 2% of codebase)
 
-| Language | Tasks w/ Code | Mean | Median | Std | Min | Max |
-|----------|---------------|------|--------|-----|-----|-----|
-| HTML | 645 | 2.8K | 252.0 | 5.0K | 4 | 15.1K |
-| JavaScript | 621 | 17.0K | 10.8K | 25.1K | 4 | 125.2K |
-| Python | 484 | 91.8K | 54.3K | 214.5K | 23 | 1.7M |
-| Go | 376 | 227.7K | 37.0K | 427.3K | 61 | 1.8M |
-| TypeScript | 212 | 202.0K | 197.9K | 179.7K | 8.3K | 786.7K |
-| C++ | 130 | 63.1 | 22.0 | 59.9 | 22 | 192 |
-| C | 98 | 93.6K | 163.8K | 84.6K | 8 | 180.8K |
-| Rust | 52 | 4.8K | 4.2K | 3.5K | 230 | 9.6K |
-| Ruby | 27 | 49.4 | 36.0 | 27.8 | 24 | 82 |
-| Java | 20 | 2.0K | 53.0 | 2.7K | 53 | 5.7K |
-| Kotlin | 13 | 6.2K | 6.4K | 313.8 | 5.5K | 6.6K |
+| Language | % | Tasks w/ Code | Mean | Median | Std | Min | Max |
+|----------|---|---------------|------|--------|-----|-----|-----|
+| Go | 43.9% | 376 | 227.7K | 37.0K | 427.3K | 61 | 1.8M |
+| Python | 22.8% | 484 | 91.8K | 54.3K | 214.5K | 23 | 1.7M |
+| TypeScript | 22.0% | 212 | 202.0K | 197.9K | 179.7K | 8.3K | 786.7K |
+| JavaScript | 5.4% | 621 | 17.0K | 10.8K | 25.1K | 4 | 125.2K |
+| C | 4.7% | 98 | 93.6K | 163.8K | 84.6K | 8 | 180.8K |
 
 ### Patch Complexity by Primary Language
 
@@ -293,15 +281,13 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 | 75th Percentile | 389.8K |
 | Max | 581.2K |
 
-### LOC Stats by Language
+### LOC Stats by Language (>= 2% of codebase)
 
-| Language | Tasks w/ Code | Mean | Median | Std | Min | Max |
-|----------|---------------|------|--------|-----|-----|-----|
-| Python | 500 | 261.7K | 277.9K | 135.9K | 7.9K | 581.2K |
-| HTML | 491 | 2.4K | 1.2K | 2.2K | 2 | 5.0K |
-| JavaScript | 373 | 17.0K | 18.2K | 11.4K | 2 | 52.3K |
-| C | 132 | 43.5K | 3.8K | 72.0K | 1 | 235.7K |
-| C++ | 48 | 20.7K | 26.9K | 10.9K | 364 | 29.8K |
+| Language | % | Tasks w/ Code | Mean | Median | Std | Min | Max |
+|----------|---|---------------|------|--------|-----|-----|-----|
+| Python | 90.2% | 500 | 261.7K | 277.9K | 135.9K | 7.9K | 581.2K |
+| JavaScript | 4.4% | 373 | 17.0K | 18.2K | 11.4K | 2 | 52.3K |
+| C | 4.0% | 132 | 43.5K | 3.8K | 72.0K | 1 | 235.7K |
 
 ### Patch Complexity by Primary Language
 
@@ -351,17 +337,12 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 | 75th Percentile | 521.7K |
 | Max | 2.0M |
 
-### LOC Stats by Language
+### LOC Stats by Language (>= 2% of codebase)
 
-| Language | Tasks w/ Code | Mean | Median | Std | Min | Max |
-|----------|---------------|------|--------|-----|-----|-----|
-| C | 198 | 31.7 | 32.0 | 0.8 | 27 | 32 |
-| Java | 198 | 707.4 | 708.0 | 32.5 | 614 | 982 |
-| JavaScript | 198 | 235.0K | 219.1K | 141.8K | 204.7K | 1.6M |
-| HTML | 198 | 873.2 | 758.0 | 254.3 | 746 | 1.4K |
-| TypeScript | 198 | 300.0K | 300.9K | 27.0K | 26.6K | 337.4K |
-| Kotlin | 196 | 142.0 | 141.0 | 4.8 | 135 | 186 |
-| Ruby | 196 | 87.1 | 77.0 | 26.4 | 21 | 141 |
+| Language | % | Tasks w/ Code | Mean | Median | Std | Min | Max |
+|----------|---|---------------|------|--------|-----|-----|-----|
+| TypeScript | 55.9% | 198 | 300.0K | 300.9K | 27.0K | 26.6K | 337.4K |
+| JavaScript | 43.8% | 198 | 235.0K | 219.1K | 141.8K | 204.7K | 1.6M |
 
 ### Patch Complexity by Primary Language
 
