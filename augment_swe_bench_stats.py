@@ -35,15 +35,15 @@ def process_eval_set(eval_set):
     if eval_set == "verified":
         dataset_name = "SWE-bench/SWE-bench_Verified"
         input_file = "swe_bench_verified_loc_stats.csv"
-        output_file = "swe_bench_verified_loc_stats_augmented.csv"
+        output_file = "augmented/swe_bench_verified_loc_stats_augmented.csv"
     elif eval_set == "multilingual":
         dataset_name = "SWE-bench/SWE-bench_Multilingual"
         input_file = "swe_bench_multilingual_loc_stats.csv"
-        output_file = "swe_bench_multilingual_loc_stats_augmented.csv"
+        output_file = "augmented/swe_bench_multilingual_loc_stats_augmented.csv"
     elif eval_set == "pro":
         dataset_name = "ScaleAI/SWE-bench_Pro"
         input_file = "swe_bench_pro_loc_stats.csv"
-        output_file = "swe_bench_pro_loc_stats_augmented.csv"
+        output_file = "augmented/swe_bench_pro_loc_stats_augmented.csv"
     else:
         raise ValueError(f"Unknown eval_set: {eval_set}")
 
