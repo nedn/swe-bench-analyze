@@ -71,45 +71,45 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 
 | Repository | Main Languages | Max Repo Size | Tasks | Median Complexity |
 |------------|----------------|---------------|-------|-------------------|
-| cli/cli | Go, JavaScript, TypeScript | 158.8K | 397 | 34 |
-| sveltejs/svelte | JavaScript, TypeScript, HTML | 85.4K | 272 | 32 |
-| mui/material-ui | JavaScript, TypeScript, HTML | 911.1K | 174 | 36 |
-| clap-rs/clap | Rust, JavaScript, HTML | 76.6K | 132 | 51 |
-| ponylang/ponyc | C, C++, Python | 121.5K | 82 | 36 |
-| iamkun/dayjs | JavaScript, TypeScript | 15.8K | 56 | 6 |
-| nlohmann/json | C++, C, Python | 106.7K | 55 | 106 |
-| vuejs/core | TypeScript, HTML, JavaScript | 120.6K | 48 | 10 |
-| fasterxml/jackson-databind | HTML, Java, JavaScript | 7.8M | 42 | 18 |
-| fmtlib/fmt | C, C++, Python | 50.4K | 41 | 18 |
-| elastic/logstash | Ruby, Java, Python | 100.7K | 38 | 88 |
-| facebook/zstd | C, C++, Python | 98.1K | 29 | 42 |
-| tokio-rs/tokio | Rust | 87.0K | 25 | 116 |
-| tokio-rs/tracing | Rust, HTML | 39.5K | 21 | 123 |
-| simdjson/simdjson | C, C++, Python | 168.7K | 20 | 218 |
-| anuraghazra/github-readme-stats | JavaScript, Python | 10.2K | 19 | 60 |
-| fasterxml/jackson-core | HTML, Java, JavaScript | 2.2M | 18 | 25 |
-| jqlang/jq | C, Python, C++ | 34.7K | 17 | 10 |
-| grpc/grpc-go | Go | 88.3K | 16 | 29 |
-| zeromicro/go-zero | Go | 90.6K | 15 | 31 |
-| BurntSushi/ripgrep | Rust, Python, Ruby | 32.2K | 14 | 28 |
-| nushell/nushell | Rust, Python | 229.8K | 14 | 38 |
-| sharkdp/fd | Rust | 4.0K | 14 | 46 |
-| catchorg/Catch2 | C++, C, Python | 53.3K | 12 | 88 |
-| sharkdp/bat | Rust, Python, JavaScript | 26.9K | 10 | 76 |
-| alibaba/fastjson2 | Java, Kotlin, HTML | 420.6K | 6 | 6 |
-| mockito/mockito | Java, Kotlin, JavaScript | 63.3K | 6 | 52 |
-| fasterxml/jackson-dataformat-xml | HTML, Java, JavaScript | 672.3K | 5 | 23 |
-| google/gson | Java, HTML, JavaScript | 48.6K | 5 | 22 |
-| googlecontainertools/jib | Java, Kotlin, HTML | 56.4K | 5 | 6 |
-| tokio-rs/bytes | Rust | 5.8K | 5 | 37 |
-| axios/axios | JavaScript, TypeScript, HTML | 22.9K | 4 | 33 |
-| expressjs/express | JavaScript, HTML | 17.0K | 4 | 7 |
-| apache/dubbo | Java | 214.5K | 3 | 4 |
-| darkreader/darkreader | TypeScript, JavaScript, HTML | 20.9K | 2 | 13 |
-| rayon-rs/rayon | Rust | 25.5K | 2 | 638 |
-| serde-rs/serde | Rust | 30.3K | 2 | 72 |
-| Kong/insomnia | TypeScript, JavaScript, HTML | 192.5K | 1 | 1 |
-| yhirose/cpp-httplib | C++, C, Python | 28.6K | 1 | 1 |
+| cli/cli | Go (158.8K), JavaScript (33.6K) | 158.8K | 397 | 34 |
+| sveltejs/svelte | JavaScript (80.3K), TypeScript (4.7K) | 85.4K | 272 | 32 |
+| mui/material-ui | JavaScript (661.7K), TypeScript (249.4K) | 911.1K | 174 | 36 |
+| clap-rs/clap | Rust (75.9K) | 76.6K | 132 | 51 |
+| ponylang/ponyc | C (82.0K), C++ (37.4K) | 121.5K | 82 | 36 |
+| iamkun/dayjs | JavaScript (15.8K) | 15.8K | 56 | 6 |
+| nlohmann/json | C++ (98.0K), C (7.4K), Python (5.9K) | 106.7K | 55 | 106 |
+| vuejs/core | TypeScript (116.5K) | 120.6K | 48 | 10 |
+| fasterxml/jackson-databind | HTML (7.7M) | 7.8M | 42 | 18 |
+| fmtlib/fmt | C (33.8K), C++ (20.1K) | 50.4K | 41 | 18 |
+| elastic/logstash | Ruby (53.4K), Java (45.8K) | 100.7K | 38 | 88 |
+| facebook/zstd | C (87.7K), C++ (5.9K) | 98.1K | 29 | 42 |
+| tokio-rs/tokio | Rust (87.0K) | 87.0K | 25 | 116 |
+| tokio-rs/tracing | Rust (39.5K) | 39.5K | 21 | 123 |
+| simdjson/simdjson | C (100.7K), C++ (67.2K) | 168.7K | 20 | 218 |
+| anuraghazra/github-readme-stats | JavaScript (10.2K) | 10.2K | 19 | 60 |
+| fasterxml/jackson-core | HTML (2.2M) | 2.2M | 18 | 25 |
+| jqlang/jq | C (34.0K) | 34.7K | 17 | 10 |
+| grpc/grpc-go | Go (88.3K) | 88.3K | 16 | 29 |
+| zeromicro/go-zero | Go (90.6K) | 90.6K | 15 | 31 |
+| BurntSushi/ripgrep | Rust (30.9K) | 32.2K | 14 | 28 |
+| nushell/nushell | Rust (229.6K) | 229.8K | 14 | 38 |
+| sharkdp/fd | Rust (4.0K) | 4.0K | 14 | 46 |
+| catchorg/Catch2 | C++ (51.5K), C (4.3K) | 53.3K | 12 | 88 |
+| sharkdp/bat | Rust (11.4K), Python (6.9K), JavaScript (6.9K) | 26.9K | 10 | 76 |
+| alibaba/fastjson2 | Java (418.9K) | 420.6K | 6 | 6 |
+| mockito/mockito | Java (62.5K) | 63.3K | 6 | 52 |
+| fasterxml/jackson-dataformat-xml | HTML (655.9K) | 672.3K | 5 | 23 |
+| google/gson | Java (27.9K), HTML (23.2K) | 48.6K | 5 | 22 |
+| googlecontainertools/jib | Java (56.1K) | 56.4K | 5 | 6 |
+| tokio-rs/bytes | Rust (5.8K) | 5.8K | 5 | 37 |
+| axios/axios | JavaScript (21.5K) | 22.9K | 4 | 33 |
+| expressjs/express | JavaScript (16.9K) | 17.0K | 4 | 7 |
+| apache/dubbo | Java (214.5K) | 214.5K | 3 | 4 |
+| darkreader/darkreader | TypeScript (18.7K), JavaScript (2.1K) | 20.9K | 2 | 13 |
+| rayon-rs/rayon | Rust (25.5K) | 25.5K | 2 | 638 |
+| serde-rs/serde | Rust (30.3K) | 30.3K | 2 | 72 |
+| Kong/insomnia | TypeScript (98.8K), JavaScript (93.6K) | 192.5K | 1 | 1 |
+| yhirose/cpp-httplib | C++ (15.0K), C (13.6K) | 28.6K | 1 | 1 |
 
 ## swe_bench_multilingual
 
@@ -170,47 +170,47 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 
 | Repository | Main Languages | Max Repo Size | Tasks | Median Complexity |
 |------------|----------------|---------------|-------|-------------------|
-| preactjs/preact | JavaScript, TypeScript, HTML | 36.9K | 17 | 7 |
-| projectlombok/lombok | Java, HTML, JavaScript | 101.9K | 17 | 11 |
-| rubocop/rubocop | Ruby, HTML | 224.7K | 16 | 10 |
-| caddyserver/caddy | Go, HTML, PHP | 56.5K | 14 | 16 |
-| laravel/framework | PHP, JavaScript | 264.4K | 13 | 4 |
-| fluent/fluentd | Ruby | 82.7K | 12 | 8 |
-| redis/redis | C, HTML, Python | 188.4K | 12 | 14 |
-| fmtlib/fmt | C++, Python, HTML | 21.2K | 11 | 8 |
-| briannesbitt/carbon | PHP | 166.3K | 10 | 16 |
-| php-cs-fixer/php-cs-fixer | PHP, Ruby | 207.4K | 10 | 10 |
-| phpoffice/phpspreadsheet | PHP, HTML, JavaScript | 196.9K | 10 | 12 |
-| apache/lucene | Java, Python, HTML | 882.7K | 9 | 7 |
-| google/gson | Java, HTML, JavaScript | 48.0K | 9 | 9 |
-| jqlang/jq | C, Python, JavaScript | 30.1K | 9 | 32 |
-| tokio-rs/tokio | Rust | 87.3K | 9 | 7 |
-| gin-gonic/gin | Go | 15.0K | 8 | 2 |
-| prometheus/prometheus | Go, TypeScript, JavaScript | 236.3K | 8 | 29 |
-| sharkdp/bat | Rust, Python, JavaScript | 26.3K | 8 | 18 |
-| astral-sh/ruff | Rust, Python, TypeScript | 391.6K | 7 | 14 |
-| fastlane/fastlane | Ruby, Java, HTML | 125.6K | 7 | 5 |
-| gohugoio/hugo | Go, HTML, JavaScript | 148.8K | 7 | 4 |
-| tokio-rs/axum | Rust, HTML, JavaScript | 24.5K | 7 | 64 |
-| axios/axios | JavaScript, TypeScript, HTML | 26.8K | 6 | 5 |
-| apache/druid | Java, TypeScript, Python | 1.3M | 5 | 11 |
-| babel/babel | JavaScript, TypeScript, HTML | 270.2K | 5 | 2 |
-| facebook/docusaurus | TypeScript, JavaScript, HTML | 145.8K | 5 | 23 |
-| hashicorp/terraform | Go | 398.3K | 5 | 43 |
-| jekyll/jekyll | Ruby, JavaScript, HTML | 19.6K | 5 | 10 |
-| micropython/micropython | C, Python, JavaScript | 272.5K | 5 | 8 |
-| nushell/nushell | Rust, Python | 229.0K | 5 | 15 |
-| uutils/coreutils | Rust, Python, JavaScript | 128.5K | 5 | 24 |
-| vuejs/core | TypeScript, HTML, JavaScript | 120.6K | 5 | 11 |
-| valkey-io/valkey | C, HTML, Python | 195.3K | 4 | 7 |
-| mrdoob/three.js | JavaScript, HTML | 683.3K | 3 | 6 |
-| burntsushi/ripgrep | Rust, Python, Ruby | 31.4K | 2 | 44 |
-| faker-ruby/faker | Ruby | 20.9K | 2 | 3 |
-| immutable-js/immutable-js | TypeScript, JavaScript | 18.3K | 2 | 9 |
-| javaparser/javaparser | Java | 214.4K | 2 | 82 |
-| jordansissel/fpm | Ruby, Python | 8.7K | 2 | 28 |
-| nlohmann/json | C++, Python, C | 46.5K | 1 | 6 |
-| reactivex/rxjava | Java | 315.3K | 1 | 5 |
+| preactjs/preact | JavaScript (34.8K) | 36.9K | 17 | 7 |
+| projectlombok/lombok | Java (98.0K) | 101.9K | 17 | 11 |
+| rubocop/rubocop | Ruby (224.1K) | 224.7K | 16 | 10 |
+| caddyserver/caddy | Go (55.4K) | 56.5K | 14 | 16 |
+| laravel/framework | PHP (264.3K) | 264.4K | 13 | 4 |
+| fluent/fluentd | Ruby (82.7K) | 82.7K | 12 | 8 |
+| redis/redis | C (179.4K) | 188.4K | 12 | 14 |
+| fmtlib/fmt | C++ (19.7K), Python (1.3K) | 21.2K | 11 | 8 |
+| briannesbitt/carbon | PHP (166.3K) | 166.3K | 10 | 16 |
+| php-cs-fixer/php-cs-fixer | PHP (207.4K) | 207.4K | 10 | 10 |
+| phpoffice/phpspreadsheet | PHP (196.5K) | 196.9K | 10 | 12 |
+| apache/lucene | Java (868.5K) | 882.7K | 9 | 7 |
+| google/gson | Java (33.6K), HTML (23.2K) | 48.0K | 9 | 9 |
+| jqlang/jq | C (29.7K) | 30.1K | 9 | 32 |
+| tokio-rs/tokio | Rust (87.3K) | 87.3K | 9 | 7 |
+| gin-gonic/gin | Go (15.0K) | 15.0K | 8 | 2 |
+| prometheus/prometheus | Go (198.8K), TypeScript (33.9K), JavaScript (13.2K) | 236.3K | 8 | 29 |
+| sharkdp/bat | Rust (10.8K), Python (6.9K), JavaScript (6.9K) | 26.3K | 8 | 18 |
+| astral-sh/ruff | Rust (261.1K), Python (128.6K) | 391.6K | 7 | 14 |
+| fastlane/fastlane | Ruby (124.6K) | 125.6K | 7 | 5 |
+| gohugoio/hugo | Go (140.6K) | 148.8K | 7 | 4 |
+| tokio-rs/axum | Rust (24.5K) | 24.5K | 7 | 64 |
+| axios/axios | JavaScript (25.3K) | 26.8K | 6 | 5 |
+| apache/druid | Java (1.2M) | 1.3M | 5 | 11 |
+| babel/babel | JavaScript (174.6K), TypeScript (95.5K) | 270.2K | 5 | 2 |
+| facebook/docusaurus | TypeScript (77.5K), JavaScript (67.9K) | 145.8K | 5 | 23 |
+| hashicorp/terraform | Go (398.3K) | 398.3K | 5 | 43 |
+| jekyll/jekyll | Ruby (17.5K), JavaScript (1.1K), HTML (1.0K) | 19.6K | 5 | 10 |
+| micropython/micropython | C (214.5K), Python (56.2K) | 272.5K | 5 | 8 |
+| nushell/nushell | Rust (228.8K) | 229.0K | 5 | 15 |
+| uutils/coreutils | Rust (128.0K) | 128.5K | 5 | 24 |
+| vuejs/core | TypeScript (116.5K) | 120.6K | 5 | 11 |
+| valkey-io/valkey | C (185.7K) | 195.3K | 4 | 7 |
+| mrdoob/three.js | JavaScript (362.5K), HTML (328.3K) | 683.3K | 3 | 6 |
+| burntsushi/ripgrep | Rust (30.1K) | 31.4K | 2 | 44 |
+| faker-ruby/faker | Ruby (20.9K) | 20.9K | 2 | 3 |
+| immutable-js/immutable-js | TypeScript (11.1K), JavaScript (7.3K) | 18.3K | 2 | 9 |
+| javaparser/javaparser | Java (214.4K) | 214.4K | 2 | 82 |
+| jordansissel/fpm | Ruby (8.6K) | 8.7K | 2 | 28 |
+| nlohmann/json | C++ (45.7K) | 46.5K | 1 | 6 |
+| reactivex/rxjava | Java (315.3K) | 315.3K | 1 | 5 |
 
 ## swe_bench_pro
 
@@ -265,17 +265,17 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 
 | Repository | Main Languages | Max Repo Size | Tasks | Median Complexity |
 |------------|----------------|---------------|-------|-------------------|
-| ansible/ansible | Python, HTML, JavaScript | 1.7M | 96 | 86 |
-| internetarchive/openlibrary | Python, HTML, JavaScript | 90.0K | 91 | 97 |
-| flipt-io/flipt | Go, TypeScript, JavaScript | 103.5K | 85 | 153 |
-| qutebrowser/qutebrowser | Python, JavaScript, HTML | 113.8K | 79 | 52 |
-| gravitational/teleport | Go, C, TypeScript | 2.0M | 76 | 113 |
-| protonmail/webclients | TypeScript, JavaScript, HTML | 912.9K | 65 | 103 |
-| future-architect/vuls | Go | 73.8K | 62 | 160 |
-| navidrome/navidrome | Go, JavaScript, C++ | 54.1K | 57 | 109 |
-| element-hq/element-web | TypeScript, JavaScript, HTML | 252.2K | 56 | 82 |
-| NodeBB/NodeBB | JavaScript, HTML | 108.4K | 44 | 74 |
-| tutao/tutanota | TypeScript, C, JavaScript | 440.5K | 20 | 110 |
+| ansible/ansible | Python (1.7M) | 1.7M | 96 | 86 |
+| internetarchive/openlibrary | Python (63.6K), HTML (15.1K), JavaScript (11.7K) | 90.0K | 91 | 97 |
+| flipt-io/flipt | Go (87.0K), TypeScript (16.6K) | 103.5K | 85 | 153 |
+| qutebrowser/qutebrowser | Python (88.9K), JavaScript (19.8K) | 113.8K | 79 | 52 |
+| gravitational/teleport | Go (1.8M), C (180.8K), TypeScript (132.8K) | 2.0M | 76 | 113 |
+| protonmail/webclients | TypeScript (786.7K), JavaScript (125.2K) | 912.9K | 65 | 103 |
+| future-architect/vuls | Go (73.8K) | 73.8K | 62 | 160 |
+| navidrome/navidrome | Go (48.0K), JavaScript (15.8K) | 54.1K | 57 | 109 |
+| element-hq/element-web | TypeScript (246.1K), JavaScript (53.9K) | 252.2K | 56 | 82 |
+| NodeBB/NodeBB | JavaScript (108.2K) | 108.4K | 44 | 74 |
+| tutao/tutanota | TypeScript (214.7K), C (163.8K), JavaScript (56.0K) | 440.5K | 20 | 110 |
 
 ## swe_bench_verified
 
@@ -322,18 +322,18 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 
 | Repository | Main Languages | Max Repo Size | Tasks | Median Complexity |
 |------------|----------------|---------------|-------|-------------------|
-| django/django | Python, JavaScript, HTML | 399.8K | 231 | 6 |
-| sympy/sympy | Python, HTML, JavaScript | 581.2K | 75 | 7 |
-| sphinx-doc/sphinx | Python, JavaScript, HTML | 130.9K | 44 | 8 |
-| matplotlib/matplotlib | Python, C, C++ | 257.0K | 34 | 7 |
-| scikit-learn/scikit-learn | Python, C, C++ | 282.6K | 32 | 8 |
-| astropy/astropy | Python, C, JavaScript | 530.1K | 22 | 8 |
-| pydata/xarray | Python, HTML | 113.9K | 22 | 7 |
-| pytest-dev/pytest | Python, HTML | 66.7K | 19 | 7 |
-| pylint-dev/pylint | Python, HTML | 79.5K | 10 | 11 |
-| psf/requests | Python, HTML | 14.5K | 8 | 4 |
-| mwaskom/seaborn | Python, JavaScript, HTML | 39.9K | 2 | 14 |
-| pallets/flask | Python, HTML | 13.1K | 1 | 3 |
+| django/django | Python (375.8K) | 399.8K | 231 | 6 |
+| sympy/sympy | Python (581.2K) | 581.2K | 75 | 7 |
+| sphinx-doc/sphinx | Python (84.3K), JavaScript (52.3K) | 130.9K | 44 | 8 |
+| matplotlib/matplotlib | Python (184.8K), C (59.4K), C++ (29.8K) | 257.0K | 34 | 7 |
+| scikit-learn/scikit-learn | Python (275.3K) | 282.6K | 32 | 8 |
+| astropy/astropy | Python (283.6K), C (235.7K) | 530.1K | 22 | 8 |
+| pydata/xarray | Python (113.9K) | 113.9K | 22 | 7 |
+| pytest-dev/pytest | Python (66.6K) | 66.7K | 19 | 7 |
+| pylint-dev/pylint | Python (79.4K) | 79.5K | 10 | 11 |
+| psf/requests | Python (14.3K) | 14.5K | 8 | 4 |
+| mwaskom/seaborn | Python (39.9K) | 39.9K | 2 | 14 |
+| pallets/flask | Python (12.8K) | 13.1K | 1 | 3 |
 
 ## swe_lancer
 
@@ -382,4 +382,4 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 
 | Repository | Main Languages | Max Repo Size | Tasks | Median Complexity |
 |------------|----------------|---------------|-------|-------------------|
-| Expensify/App | JavaScript, TypeScript, HTML | 2.0M | 198 | 14 |
+| Expensify/App | JavaScript (1.6M), TypeScript (337.4K) | 2.0M | 198 | 14 |

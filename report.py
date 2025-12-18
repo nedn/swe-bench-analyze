@@ -106,13 +106,18 @@ def analyze_repositories(df: pd.DataFrame, lang_cols: list[str]) -> list[dict]:
     """Analyze stats per repository."""
     repos = []
     for repo_name, repo_df in df.groupby("repo"):
-        # Get main languages (top 3 by max LOC across tasks)
+        # Get max LOC for each language across tasks
         lang_max = {lang: repo_df[lang].max() for lang in lang_cols}
-        sorted_langs = sorted(lang_max.items(), key=lambda x: x[1], reverse=True)
-        main_langs = [lang for lang, loc in sorted_langs[:3] if loc > 0]
 
         # Max repo size (max total_loc across all tasks for this repo)
         max_repo_size = repo_df["total_loc"].max()
+
+        # Filter languages with LOC >= 5% of total and sort by LOC descending
+        threshold = max_repo_size * 0.05
+        main_langs = [
+            (lang, loc) for lang, loc in sorted(lang_max.items(), key=lambda x: x[1], reverse=True)
+            if loc >= threshold
+        ]
 
         # Number of tasks
         task_count = len(repo_df)
@@ -122,7 +127,7 @@ def analyze_repositories(df: pd.DataFrame, lang_cols: list[str]) -> list[dict]:
 
         repos.append({
             "name": repo_name,
-            "main_languages": main_langs,
+            "main_languages": main_langs,  # List of (lang, loc) tuples
             "max_repo_size": max_repo_size,
             "task_count": task_count,
             "median_complexity": median_complexity,
@@ -353,7 +358,13 @@ def generate_markdown_report(all_results: list[dict], output_path: Path):
         lines.append("| Repository | Main Languages | Max Repo Size | Tasks | Median Complexity |")
         lines.append("|------------|----------------|---------------|-------|-------------------|")
         for repo in res["repositories"]:
-            langs_str = ", ".join(repo["main_languages"]) if repo["main_languages"] else "N/A"
+            # Format languages with LOC: "Python (1.1M), JavaScript (10.1K)"
+            if repo["main_languages"]:
+                langs_str = ", ".join(
+                    f"{lang} ({format_number(loc)})" for lang, loc in repo["main_languages"]
+                )
+            else:
+                langs_str = "N/A"
             lines.append(
                 f"| {repo['name']} | {langs_str} | "
                 f"{format_number(repo['max_repo_size'])} | {repo['task_count']} | "
