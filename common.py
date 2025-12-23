@@ -89,6 +89,7 @@ def write_loc_stats_csv(output_file, results, eval_set):
     header = ["eval_set", "instance_id", "repo", "commit"] + TARGET_LANGUAGES
     eval_set_name = eval_set.value if isinstance(eval_set, EvalSet) else eval_set
 
+    results.sort(key=lambda r: r['repo'] + r['commit'])
     with open(output_file, mode='w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow(header)
