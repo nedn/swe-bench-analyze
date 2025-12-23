@@ -4,16 +4,17 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 
 ## Summary
 
-| Benchmark | Tasks | Repo LOC (mean) | Patch Total (mean) | Patch Total (median) | Main Languages |
-|-----------|-------|-----------------|--------------------|--------------------|----------------|
-| multi_swe_bench | 1632 | 180.3K | 163.2 | 33 | JavaScript (38.2%), HTML (24.6%), Go (12.1%) |
-| swe_bench_multilingual | 300 | 169.2K | 47.8 | 10 | Java (30.6%), PHP (17.2%), Ruby (10.7%) |
-| swe_bench_pro | 731 | 266.5K | 169.6 | 94 | Go (43.9%), Python (22.8%), TypeScript (22.0%) |
-| swe_bench_verified | 500 | 290.2K | 14.3 | 7 | Python (90.2%), JavaScript (4.4%), C (4.0%) |
-| swe_lancer | 198 | 536.8K | 33.4 | 14 | TypeScript (55.9%), JavaScript (43.8%) |
+| Benchmark | Org | Tasks | Repo LOC (mean) | Patch Total (mean) | Patch Total (median) | Main Languages |
+|-----------|-----|-------|-----------------|--------------------|--------------------|----------------|
+| multi_swe_bench | ByteDance | 1632 | 180.3K | 163.2 | 33 | JavaScript (38.2%), HTML (24.6%), Go (12.1%) |
+| swe_bench_multilingual | SWE-Bench | 300 | 169.2K | 47.8 | 10 | Java (30.6%), PHP (17.2%), Ruby (10.7%) |
+| swe_bench_pro | Scale AI | 731 | 266.5K | 169.6 | 94 | Go (43.9%), Python (22.8%), TypeScript (22.0%) |
+| swe_bench_verified | OpenAI | 500 | 290.2K | 14.3 | 7 | Python (90.2%), JavaScript (4.4%), C (4.0%) |
+| swe_lancer | OpenAI | 198 | 536.8K | 33.4 | 14 | TypeScript (55.9%), JavaScript (43.8%) |
 
 ## multi_swe_bench
 
+**Organization:** ByteDance  
 **Task Count:** 1632
 
 ### Repository Size Stats (Total LOC)
@@ -109,6 +110,7 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 
 ## swe_bench_multilingual
 
+**Organization:** SWE-Bench  
 **Task Count:** 300
 
 ### Repository Size Stats (Total LOC)
@@ -208,6 +210,7 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 
 ## swe_bench_pro
 
+**Organization:** Scale AI  
 **Task Count:** 731
 
 ### Repository Size Stats (Total LOC)
@@ -267,6 +270,7 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 
 ## swe_bench_verified
 
+**Organization:** OpenAI  
 **Task Count:** 500
 
 ### Repository Size Stats (Total LOC)
@@ -323,6 +327,7 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 
 ## swe_lancer
 
+**Organization:** OpenAI  
 **Task Count:** 198
 
 ### Repository Size Stats (Total LOC)

@@ -13,6 +13,15 @@ from common import TARGET_LANGUAGES
 AUGMENTED_DIR = Path("augmented")
 REPORTS_DIR = Path("reports")
 
+# Organization/source information for each benchmark
+BENCHMARK_ORGS = {
+    "multi_swe_bench": "ByteDance",
+    "swe_bench_multilingual": "SWE-Bench",
+    "swe_bench_pro": "Scale AI",
+    "swe_bench_verified": "OpenAI",
+    "swe_lancer": "OpenAI",
+}
+
 
 def load_benchmark_data() -> dict[str, pd.DataFrame]:
     """Load all augmented CSV files from the augmented directory."""
@@ -281,8 +290,8 @@ def generate_markdown_report(all_results: list[dict], output_path: Path):
 
     # Summary table
     lines.append("## Summary\n")
-    lines.append("| Benchmark | Tasks | Repo LOC (mean) | Patch Total (mean) | Patch Total (median) | Main Languages |")
-    lines.append("|-----------|-------|-----------------|--------------------|--------------------|----------------|")
+    lines.append("| Benchmark | Org | Tasks | Repo LOC (mean) | Patch Total (mean) | Patch Total (median) | Main Languages |")
+    lines.append("|-----------|-----|-------|-----------------|--------------------|--------------------|----------------|")
     for res in all_results:
         # Get top 3 languages by percentage of LOC
         sorted_langs = sorted(
@@ -291,8 +300,9 @@ def generate_markdown_report(all_results: list[dict], output_path: Path):
             reverse=True,
         )[:3]
         main_langs = ", ".join([f"{lang} ({stats['percentage']:.1f}%)" for lang, stats in sorted_langs])
+        org = BENCHMARK_ORGS.get(res['name'], "Unknown")
         lines.append(
-            f"| {res['name']} | {res['task_count']} | "
+            f"| {res['name']} | {org} | {res['task_count']} | "
             f"{format_number(res['repo_size_stats']['mean'])} | "
             f"{res['patch_overall']['total']['mean']:.1f} | "
             f"{res['patch_overall']['total']['median']:.0f} | "
@@ -302,7 +312,9 @@ def generate_markdown_report(all_results: list[dict], output_path: Path):
 
     # Detailed sections for each benchmark
     for res in all_results:
+        org = BENCHMARK_ORGS.get(res['name'], "Unknown")
         lines.append(f"## {res['name']}\n")
+        lines.append(f"**Organization:** {org}  ")
         lines.append(f"**Task Count:** {res['task_count']}\n")
 
         # Repository Size Stats
