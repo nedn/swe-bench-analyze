@@ -4,7 +4,7 @@ import subprocess
 import json
 import argparse
 import tempfile
-from common import check_scc_installed, get_loc_counts, write_loc_stats_csv, EvalSet
+from common import check_scc_installed, get_loc_counts, write_loc_stats_csv, EvalSet, clone_repo_with_retry, checkout_with_retry
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze LOC statistics for SWELancer tasks.")
@@ -70,10 +70,7 @@ def main():
     if os.path.exists(expensify_dir):
         shutil.rmtree(expensify_dir, ignore_errors=True)
 
-    subprocess.run(
-        ["git", "clone", "--filter=blob:none", "https://github.com/Expensify/App", expensify_dir],
-        check=True
-    )
+    clone_repo_with_retry("https://github.com/Expensify/App", expensify_dir)
 
     # 4. Analyze each task
     results = []
@@ -84,12 +81,7 @@ def main():
         print(f"Processing {i+1}/{len(tasks)}: {task_id} @ {commit_sha[:7]}")
 
         # Checkout commit
-        subprocess.run(
-            ["git", "checkout", "-f", commit_sha],
-            cwd=expensify_dir,
-            check=True,
-            capture_output=True
-        )
+        checkout_with_retry(expensify_dir, commit_sha)
         
         # Run SCC
         stats = get_loc_counts(expensify_dir)

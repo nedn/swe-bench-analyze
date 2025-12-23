@@ -123,3 +123,24 @@ def clone_repo_with_retry(repo_url, target_dir, max_retries=3):
             else:
                 raise e
 
+
+def checkout_with_retry(repo_path, commit_sha, max_retries=3):
+    """
+    Checks out a specific commit with retry logic.
+    """
+    for attempt in range(max_retries):
+        try:
+            subprocess.run(
+                ["git", "checkout", "-f", commit_sha],
+                cwd=repo_path,
+                check=True,
+                capture_output=True
+            )
+            return
+        except subprocess.CalledProcessError as e:
+            if attempt < max_retries - 1:
+                print(f"Error checking out {commit_sha} in {repo_path} (attempt {attempt+1}/{max_retries}): {e}. Retrying in 5 seconds...")
+                time.sleep(5)
+            else:
+                raise e
+

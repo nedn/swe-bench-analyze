@@ -7,7 +7,7 @@ from collections import defaultdict
 import argparse
 
 
-from common import check_scc_installed, get_loc_counts, write_loc_stats_csv, EvalSet
+from common import check_scc_installed, get_loc_counts, write_loc_stats_csv, EvalSet, clone_repo_with_retry, checkout_with_retry
 
 
 
@@ -33,11 +33,7 @@ def process_repository(repo_name, tasks):
             # This downloads the commit history (so we can checkout any SHA)
             # but doesn't download file contents until we actually checkout.
             # Much faster than a full clone.
-            subprocess.run(
-                ["git", "clone", "--filter=blob:none", repo_url, temp_dir],
-                check=True,
-                capture_output=True # Silence git output to avoid messy logs
-            )
+            clone_repo_with_retry(repo_url, temp_dir)
 
             # 2. Iterate through commits for this repo
             for task in tasks:
@@ -47,12 +43,7 @@ def process_repository(repo_name, tasks):
                 # print(f"  Checking out {commit_sha[:7]} for {instance_id}...")
 
                 # Force checkout the specific commit
-                subprocess.run(
-                    ["git", "checkout", "-f", commit_sha],
-                    cwd=temp_dir,
-                    check=True,
-                    capture_output=True
-                )
+                checkout_with_retry(temp_dir, commit_sha)
 
                 # 3. Run Analysis
                 stats = get_loc_counts(temp_dir)

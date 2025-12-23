@@ -8,7 +8,7 @@ from datasets import load_dataset
 import argparse
 
 
-from common import check_scc_installed, get_loc_counts, write_loc_stats_csv, EvalSet, clone_repo_with_retry
+from common import check_scc_installed, get_loc_counts, write_loc_stats_csv, EvalSet, clone_repo_with_retry, checkout_with_retry
 
 
 
@@ -44,12 +44,7 @@ def process_repository(repo_name, tasks):
                 # print(f"  Checking out {commit_sha[:7]} for {instance_id}...")
 
                 # Force checkout the specific commit
-                subprocess.run(
-                    ["git", "checkout", "-f", commit_sha],
-                    cwd=temp_dir,
-                    check=True,
-                    capture_output=True
-                )
+                checkout_with_retry(temp_dir, commit_sha)
 
                 # 3. Run Analysis
                 stats = get_loc_counts(temp_dir)
