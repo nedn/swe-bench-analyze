@@ -1,6 +1,5 @@
 import os
 import subprocess
-import csv
 import json
 import shutil
 import tempfile
@@ -9,7 +8,7 @@ from datasets import load_dataset
 import argparse
 
 
-from common import check_scc_installed, get_loc_counts, TARGET_LANGUAGES
+from common import check_scc_installed, get_loc_counts, write_loc_stats_csv, EvalSet
 
 
 
@@ -72,27 +71,8 @@ def process_repository(repo_name, tasks):
     print(f"Finished {repo_name}")
     return results
 
-def main():
-    parser = argparse.ArgumentParser(description="Analyze LOC statistics for SWE-bench datasets.")
-    parser.add_argument("--eval-set", choices=["verified", "multilingual", "pro", "polybench"], default="verified", help="Type of SWE-bench dataset to use.")
-    parser.add_argument("--max-workers", type=int, default=8, help="Number of parallel workers.")
-    args = parser.parse_args()
-
-    if args.eval_set == "verified":
-      dataset_name = "SWE-bench/SWE-bench_Verified"
-      output_file = "swe_bench_verified_loc_stats.csv"
-    elif args.eval_set == "multilingual":
-        dataset_name = "SWE-bench/SWE-bench_Multilingual"
-        output_file = "swe_bench_multilingual_loc_stats.csv"
-    elif args.eval_set == "pro":
-        dataset_name = "ScaleAI/SWE-bench_Pro"
-        output_file = "swe_bench_pro_loc_stats.csv"
-    elif args.eval_set == "polybench":
-        dataset_name = "AmazonScience/SWE-PolyBench"
-        output_file = "swe_polybench_loc_stats.csv"
-
-    check_scc_installed()
-
+def run_analysis(eval_set, dataset_name, output_file, max_workers):
+    """Run LOC analysis for a single eval set."""
     print(f"Loading {dataset_name} dataset...")
     dataset = load_dataset(dataset_name, split="test")
 
@@ -108,9 +88,9 @@ def main():
     results_map = {} # instance_id -> result_dict
 
     # 2. Parallel Processing
-    print(f"Starting parallel analysis with {args.max_workers} workers...")
+    print(f"Starting parallel analysis with {max_workers} workers...")
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=args.max_workers) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_repo = {
             executor.submit(process_repository, repo_name, tasks): repo_name
             for repo_name, tasks in repo_groups.items()
@@ -130,32 +110,70 @@ def main():
             except Exception as exc:
                 print(f'{repo_name} generated an exception: {exc}')
 
-    # 3. Write to CSV in order
+    # 3. Build results list in order and write to CSV
     print(f"Writing results to {output_file}...")
-    header = ["swe_bench_test_id", "repo", "commit"] + TARGET_LANGUAGES
+    results_list = []
+    count_missing = 0
+    for row in dataset:
+        instance_id = row['instance_id']
+        if instance_id in results_map:
+            results_list.append(results_map[instance_id])
+        else:
+            print(f"Warning: Missing results for {instance_id}")
+            count_missing += 1
 
-    with open(output_file, mode='w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow(header)
+    if count_missing > 0:
+        print(f"Total missing: {count_missing}")
 
-        count_missing = 0
-        for row in dataset:
-            instance_id = row['instance_id']
-            if instance_id in results_map:
-                res = results_map[instance_id]
-                stats = res['stats']
-                csv_row = [instance_id, res['repo'], res['commit']]
-                for lang in TARGET_LANGUAGES:
-                    csv_row.append(stats.get(lang, 0))
-                writer.writerow(csv_row)
-            else:
-                print(f"Warning: Missing results for {instance_id}")
-                count_missing += 1
+    write_loc_stats_csv(output_file, results_list, eval_set)
 
-        if count_missing > 0:
-            print(f"Total missing: {count_missing}")
+    print(f"\nDone! Analysis complete for {dataset_name}.\n")
 
-    print("\nDone! Analysis complete.")
+
+def main():
+    parser = argparse.ArgumentParser(description="Analyze LOC statistics for SWE-bench datasets.")
+    parser.add_argument("--eval-set", choices=["verified", "multilingual", "pro", "polybench", "all"], default="verified", help="Type of SWE-bench dataset to use.")
+    parser.add_argument("--max-workers", type=int, default=8, help="Number of parallel workers.")
+    args = parser.parse_args()
+
+    EVAL_SET_CONFIG = {
+        "verified": {
+            "eval_set": EvalSet.SWE_BENCH_VERIFIED,
+            "dataset_name": "SWE-bench/SWE-bench_Verified",
+            "output_file": "swe_bench_verified_loc_stats.csv",
+        },
+        "multilingual": {
+            "eval_set": EvalSet.SWE_BENCH_MULTILINGUAL,
+            "dataset_name": "SWE-bench/SWE-bench_Multilingual",
+            "output_file": "swe_bench_multilingual_loc_stats.csv",
+        },
+        "pro": {
+            "eval_set": EvalSet.SWE_BENCH_PRO,
+            "dataset_name": "ScaleAI/SWE-bench_Pro",
+            "output_file": "swe_bench_pro_loc_stats.csv",
+        },
+        "polybench": {
+            "eval_set": EvalSet.SWE_POLYBENCH,
+            "dataset_name": "AmazonScience/SWE-PolyBench",
+            "output_file": "swe_polybench_loc_stats.csv",
+        },
+    }
+
+    check_scc_installed()
+
+    if args.eval_set == "all":
+        eval_sets_to_run = list(EVAL_SET_CONFIG.keys())
+    else:
+        eval_sets_to_run = [args.eval_set]
+
+    for eval_set_name in eval_sets_to_run:
+        config = EVAL_SET_CONFIG[eval_set_name]
+        run_analysis(
+            config["eval_set"],
+            config["dataset_name"],
+            config["output_file"],
+            args.max_workers
+        )
 
 if __name__ == "__main__":
     main()

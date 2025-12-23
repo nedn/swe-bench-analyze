@@ -8,30 +8,31 @@ for each benchmark dataset. Outputs to console, CSV, and Markdown.
 
 import pandas as pd
 from pathlib import Path
-from common import TARGET_LANGUAGES
+from common import TARGET_LANGUAGES, EvalSet, EVAL_SET_ORGS
 
 AUGMENTED_DIR = Path("augmented")
 REPORTS_DIR = Path("reports")
 
-# Organization/source information for each benchmark
-BENCHMARK_ORGS = {
-    "multi_swe_bench": "ByteDance",
-    "swe_bench_multilingual": "SWE-Bench",
-    "swe_bench_pro": "Scale AI",
-    "swe_bench_verified": "OpenAI",
-    "swe_lancer": "OpenAI",
-    "swe_polybench": "Amazon",
-}
+
+def get_org_for_eval_set(eval_set_name: str) -> str:
+    """Get the organization name for a given eval set name."""
+    for eval_set in EvalSet:
+        if eval_set.value == eval_set_name:
+            return EVAL_SET_ORGS[eval_set]
+    raise ValueError(f'Unknown eval_set_name: {eval_set_name}')
 
 
 def load_benchmark_data() -> dict[str, pd.DataFrame]:
     """Load all augmented CSV files from the augmented directory."""
     benchmarks = {}
     for csv_file in sorted(AUGMENTED_DIR.glob("*_augmented.csv")):
-        # Extract benchmark name from filename
-        # e.g., "swe_bench_verified_loc_stats_augmented.csv" -> "swe_bench_verified"
-        name = csv_file.stem.replace("_loc_stats_augmented", "")
         df = pd.read_csv(csv_file)
+        # Use the eval_set column value as the benchmark name
+        if "eval_set" in df.columns and len(df) > 0:
+            name = df["eval_set"].iloc[0]
+        else:
+            # Fallback to extracting from filename
+            name = csv_file.stem.replace("_loc_stats_augmented", "")
         benchmarks[name] = df
     return benchmarks
 
@@ -301,7 +302,7 @@ def generate_markdown_report(all_results: list[dict], output_path: Path):
             reverse=True,
         )[:3]
         main_langs = ", ".join([f"{lang} ({stats['percentage']:.1f}%)" for lang, stats in sorted_langs])
-        org = BENCHMARK_ORGS.get(res['name'], "Unknown")
+        org = get_org_for_eval_set(res['name'])
         lines.append(
             f"| {res['name']} | {org} | {res['task_count']} | "
             f"{format_number(res['repo_size_stats']['mean'])} | "
@@ -313,7 +314,7 @@ def generate_markdown_report(all_results: list[dict], output_path: Path):
 
     # Detailed sections for each benchmark
     for res in all_results:
-        org = BENCHMARK_ORGS.get(res['name'], "Unknown")
+        org = get_org_for_eval_set(res['name'])
         lines.append(f"## {res['name']}\n")
         lines.append(f"**Organization:** {org}  ")
         lines.append(f"**Task Count:** {res['task_count']}\n")

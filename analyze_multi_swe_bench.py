@@ -1,15 +1,13 @@
 import os
 import subprocess
-import csv
 import json
 import shutil
 import tempfile
 from collections import defaultdict
-# from datasets import load_dataset
 import argparse
 
 
-from common import check_scc_installed, get_loc_counts, TARGET_LANGUAGES
+from common import check_scc_installed, get_loc_counts, write_loc_stats_csv, EvalSet
 
 
 
@@ -140,30 +138,22 @@ def main():
             except Exception as exc:
                 print(f'{repo_name} generated an exception: {exc}')
 
-    # 3. Write to CSV in order
+    # 3. Build results list in order and write to CSV
     print(f"Writing results to {output_file}...")
-    header = ["swe_bench_test_id", "repo", "commit"] + TARGET_LANGUAGES
+    results_list = []
+    count_missing = 0
+    for row in tasks:
+        instance_id = row['instance_id']
+        if instance_id in results_map:
+            results_list.append(results_map[instance_id])
+        else:
+            print(f"Warning: Missing results for {instance_id}")
+            count_missing += 1
 
-    with open(output_file, mode='w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow(header)
+    if count_missing > 0:
+        print(f"Total missing: {count_missing}")
 
-        count_missing = 0
-        for row in tasks:
-            instance_id = row['instance_id']
-            if instance_id in results_map:
-                res = results_map[instance_id]
-                stats = res['stats']
-                csv_row = [instance_id, res['repo'], res['commit']]
-                for lang in TARGET_LANGUAGES:
-                    csv_row.append(stats.get(lang, 0))
-                writer.writerow(csv_row)
-            else:
-                print(f"Warning: Missing results for {instance_id}")
-                count_missing += 1
-
-        if count_missing > 0:
-            print(f"Total missing: {count_missing}")
+    write_loc_stats_csv(output_file, results_list, EvalSet.MULTI_SWE_BENCH)
 
     print("\nDone! Analysis complete.")
 

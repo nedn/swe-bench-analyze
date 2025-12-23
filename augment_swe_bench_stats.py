@@ -81,7 +81,7 @@ def process_eval_set(eval_set):
 
             rows_processed = 0
             for row in reader:
-                instance_id = row['swe_bench_test_id']
+                instance_id = row['instance_id']
 
                 # Get the patch from the dataset
                 patch_content = patch_lookup.get(instance_id)

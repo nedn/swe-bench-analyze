@@ -1,11 +1,10 @@
 import os
 import shutil
 import subprocess
-import csv
 import json
 import argparse
 import tempfile
-from common import check_scc_installed, get_loc_counts, TARGET_LANGUAGES
+from common import check_scc_installed, get_loc_counts, write_loc_stats_csv, EvalSet
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze LOC statistics for SWELancer tasks.")
@@ -97,7 +96,7 @@ def main():
         
         # Store result
         res = {
-            "swe_lancer_task_id": task_id,
+            "instance_id": task_id,
             "repo": "Expensify/App",
             "commit": commit_sha,
             "stats": stats
@@ -105,20 +104,7 @@ def main():
         results.append(res)
 
     # 5. Write CSV
-    print(f"Writing results to {args.output_file}...")
-    
-    header = ["swe_lancer_task_id", "repo", "commit"] + TARGET_LANGUAGES
-
-    with open(args.output_file, mode='w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow(header)
-
-        for res in results:
-            stats = res['stats']
-            row = [res['swe_lancer_task_id'], res['repo'], res['commit']]
-            for lang in TARGET_LANGUAGES:
-                row.append(stats[lang])
-            writer.writerow(row)
+    write_loc_stats_csv(args.output_file, results, EvalSet.SWE_LANCER)
 
     # Cleanup
     print("Cleaning up...")

@@ -85,7 +85,7 @@ def main():
             rows_processed = 0
             missing_patches = 0
             for row in reader:
-                instance_id = row['swe_bench_test_id']
+                instance_id = row['instance_id']
 
                 # Get the patch from the lookup
                 patch_content = patch_lookup.get(instance_id)

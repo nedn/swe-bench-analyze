@@ -92,7 +92,7 @@ def main():
             rows_processed = 0
             missing_patches = 0
             for row in reader:
-                task_id = row['swe_lancer_task_id']
+                task_id = row['instance_id']
 
                 # Get the patch from the lookup
                 patch_content = patch_lookup.get(task_id)
