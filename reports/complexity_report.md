@@ -4,14 +4,14 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 
 ## Summary
 
-| Benchmark | Org | Tasks | Repo LOC (mean) | Patch Total (mean) | Patch Total (median) | Main Languages |
-|-----------|-----|-------|-----------------|--------------------|--------------------|----------------|
-| Multi-SWE-bench | ByteDance | 1632 | 180.3K | 163.2 | 33 | JavaScript (38.2%), HTML (24.6%), Go (12.1%) |
-| SWE-Bench Multilingual | SWE-bench | 300 | 173.4K | 47.8 | 10 | Java (29.9%), PHP (16.8%), Ruby (10.5%) |
-| SWE-Bench Pro | Scale AI | 731 | 276.1K | 169.6 | 94 | Go (42.4%), Python (22.0%), TypeScript (21.2%) |
-| SWE-Bench Verified | OpenAI | 500 | 292.9K | 14.3 | 7 | Python (90.0%), JavaScript (4.6%), C (3.9%) |
-| SWE-Lancer | OpenAI | 198 | 536.8K | 33.4 | 14 | TypeScript (55.9%), JavaScript (43.8%) |
-| SWE-PolyBench | Amazon | 2110 | 258.5K | 51.2 | 19 | TypeScript (37.9%), JavaScript (34.1%), Python (17.7%) |
+| Benchmark | Org | Tasks | Repos | Repo LOC (mean) | Repo LOC (max) | Patch Total (mean) | Patch Total (median) | Main Languages |
+|-----------|-----|-------|-------|-----------------|----------------|--------------------|--------------------|----------------|
+| Multi-SWE-bench | ByteDance | 1632 | 39 | 180.3K | 7.8M | 163.2 | 33 | JavaScript (38.2%), HTML (24.6%), Go (12.1%) |
+| SWE-Bench Multilingual | SWE-bench | 300 | 41 | 173.4K | 1.3M | 47.8 | 10 | Java (29.9%), PHP (16.8%), Ruby (10.5%) |
+| SWE-Bench Pro | Scale AI | 731 | 11 | 276.1K | 2.1M | 169.6 | 94 | Go (42.4%), Python (22.0%), TypeScript (21.2%) |
+| SWE-Bench Verified | OpenAI | 500 | 12 | 292.9K | 597.4K | 14.3 | 7 | Python (90.0%), JavaScript (4.6%), C (3.9%) |
+| SWE-Lancer | OpenAI | 198 | 1 | 536.8K | 2.0M | 33.4 | 14 | TypeScript (55.9%), JavaScript (43.8%) |
+| SWE-PolyBench | Amazon | 2110 | 21 | 258.5K | 1.1M | 51.2 | 19 | TypeScript (37.9%), JavaScript (34.1%), Python (17.7%) |
 
 ## Multi-SWE-bench
 

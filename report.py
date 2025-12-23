@@ -116,6 +116,7 @@ def analyze_benchmark(name: str, df: pd.DataFrame) -> dict:
 
     # Repository-level stats
     results["repositories"] = analyze_repositories(df, lang_cols)
+    results["repo_count"] = len(results["repositories"])
 
     return results
 
@@ -175,6 +176,7 @@ def print_benchmark_report(results: dict):
     print(f"  Benchmark: {results['name']}")
     print(f"{'='*70}")
     print(f"\nTask Count: {results['task_count']}")
+    print(f"Repository Count: {results['repo_count']}")
 
     # Repository Size Stats
     print(f"\n--- Repository Size Stats (Total LOC) ---")
@@ -238,6 +240,7 @@ def generate_summary_csv(all_results: list[dict], output_path: Path):
         row = {
             "benchmark": res["name"],
             "task_count": res["task_count"],
+            "repo_count": res["repo_count"],
             # Repo size stats
             "repo_loc_mean": res["repo_size_stats"]["mean"],
             "repo_loc_median": res["repo_size_stats"]["median"],
@@ -292,8 +295,8 @@ def generate_markdown_report(all_results: list[dict], output_path: Path):
 
     # Summary table
     lines.append("## Summary\n")
-    lines.append("| Benchmark | Org | Tasks | Repo LOC (mean) | Patch Total (mean) | Patch Total (median) | Main Languages |")
-    lines.append("|-----------|-----|-------|-----------------|--------------------|--------------------|----------------|")
+    lines.append("| Benchmark | Org | Tasks | Repos | Repo LOC (mean) | Repo LOC (max) | Patch Total (mean) | Patch Total (median) | Main Languages |")
+    lines.append("|-----------|-----|-------|-------|-----------------|----------------|--------------------|--------------------|----------------|")
     for res in all_results:
         # Get top 3 languages by percentage of LOC
         sorted_langs = sorted(
@@ -304,8 +307,9 @@ def generate_markdown_report(all_results: list[dict], output_path: Path):
         main_langs = ", ".join([f"{lang} ({stats['percentage']:.1f}%)" for lang, stats in sorted_langs])
         org = get_org_for_eval_set(res['name'])
         lines.append(
-            f"| {res['name']} | {org} | {res['task_count']} | "
+            f"| {res['name']} | {org} | {res['task_count']} | {res['repo_count']} | "
             f"{format_number(res['repo_size_stats']['mean'])} | "
+            f"{format_number(res['repo_size_stats']['max'])} | "
             f"{res['patch_overall']['total']['mean']:.1f} | "
             f"{res['patch_overall']['total']['median']:.0f} | "
             f"{main_langs} |"
