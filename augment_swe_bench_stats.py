@@ -75,7 +75,7 @@ def process_eval_set(eval_set):
         new_cols = ['golden_patch_added', 'golden_patch_deleted', 'golden_patch_total']
 
         # Prepare output file
-        with open(output_file, mode='w', newline='', encoding='utf-8') as outfile:
+        with open(output_file, mode='w', newline='\n', encoding='utf-8') as outfile:
             writer = csv.DictWriter(outfile, fieldnames=fieldnames + new_cols)
             writer.writeheader()
 
