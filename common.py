@@ -111,7 +111,7 @@ def clone_repo_with_retry(repo_url, target_dir, max_retries=3):
     for attempt in range(max_retries):
         try:
             subprocess.run(
-                ["git", "clone", "--filter=blob:none", repo_url, target_dir],
+                ["git", "clone", repo_url, target_dir],
                 check=True,
                 capture_output=True # Silence git output to avoid messy logs
             )
