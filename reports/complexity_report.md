@@ -11,6 +11,7 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 | swe_bench_pro | Scale AI | 731 | 266.5K | 169.6 | 94 | Go (43.9%), Python (22.8%), TypeScript (22.0%) |
 | swe_bench_verified | OpenAI | 500 | 290.2K | 14.3 | 7 | Python (90.2%), JavaScript (4.4%), C (4.0%) |
 | swe_lancer | OpenAI | 198 | 536.8K | 33.4 | 14 | TypeScript (55.9%), JavaScript (43.8%) |
+| swe_polybench | Amazon | 2110 | 258.5K | 51.2 | 19 | TypeScript (37.9%), JavaScript (34.1%), Python (17.7%) |
 
 ## multi_swe_bench
 
@@ -369,3 +370,72 @@ This report analyzes the complexity of tasks across various SWE benchmark datase
 | Repository | Main Languages | Max Repo Size | Tasks | Median Complexity |
 |------------|----------------|---------------|-------|-------------------|
 | Expensify/App | JavaScript (1.6M), TypeScript (337.4K) | 2.0M | 198 | 14 |
+
+## swe_polybench
+
+**Organization:** Amazon  
+**Task Count:** 2110
+
+### Repository Size Stats (Total LOC)
+
+| Metric | Value |
+|--------|-------|
+| Mean | 258.5K |
+| Median | 74.5K |
+| Std Dev | 324.9K |
+| Min | 2.0K |
+| 25th Percentile | 39.6K |
+| 75th Percentile | 365.5K |
+| Max | 1.1M |
+
+### LOC Stats by Language (>= 2% of codebase)
+
+| Language | % | Tasks w/ Code | Mean | Median | Std | Min | Max |
+|----------|---|---------------|------|--------|-----|-----|-----|
+| TypeScript | 37.9% | 1446 | 143.1K | 17.2K | 281.6K | 3 | 948.6K |
+| JavaScript | 34.1% | 1890 | 98.3K | 47.2K | 146.8K | 9 | 661.7K |
+| Python | 17.7% | 801 | 120.6K | 144.0 | 284.6K | 2 | 1.1M |
+| Java | 9.0% | 678 | 72.4K | 462.0 | 185.4K | 23 | 840.7K |
+
+### Patch Complexity by Primary Language
+
+| Primary Language | Tasks | Added (mean/median) | Deleted (mean/median) | Total (mean/median) |
+|------------------|-------|---------------------|----------------------|---------------------|
+| JavaScript | 1492 | 34.2 / 13 | 14.7 / 3 | 48.9 / 19 |
+| TypeScript | 254 | 23.9 / 8 | 12.7 / 3 | 36.6 / 12 |
+| Python | 199 | 47.1 / 13 | 23.0 / 4 | 70.1 / 18 |
+| Java | 165 | 47.7 / 22 | 23.6 / 7 | 71.3 / 35 |
+
+### Overall Patch Complexity
+
+| Metric | Mean | Median | Std | Min | 25% | 75% | Max |
+|--------|------|--------|-----|-----|-----|-----|-----|
+| Lines Added | 35.2 | 13 | 76.5 | 0 | 4 | 36 | 1306 |
+| Lines Deleted | 15.9 | 4 | 43.6 | 0 | 1 | 12 | 1018 |
+| Total Changed | 51.2 | 19 | 109.8 | 1 | 6 | 50 | 2144 |
+
+### Repositories
+
+| Repository | Main Languages | Max Repo Size | Tasks | Median Complexity |
+|------------|----------------|---------------|-------|-------------------|
+| sveltejs/svelte | JavaScript (33.1K), TypeScript (25.1K), HTML (11.7K) | 58.7K | 496 | 10 |
+| mui/material-ui | JavaScript (661.7K), TypeScript (259.0K) | 911.4K | 488 | 22 |
+| serverless/serverless | JavaScript (97.9K) | 100.5K | 307 | 20 |
+| microsoft/vscode | TypeScript (948.6K), JavaScript (52.5K) | 1.0M | 205 | 11 |
+| prettier/prettier | JavaScript (72.3K) | 78.4K | 196 | 31 |
+| huggingface/transformers | Python (1.1M) | 1.1M | 126 | 18 |
+| trinodb/trino | Java (840.7K), JavaScript (95.1K) | 936.5K | 46 | 40 |
+| apache/rocketmq | Java (227.5K) | 227.8K | 42 | 22 |
+| keras-team/keras | Python (161.7K) | 161.8K | 38 | 18 |
+| apache/dubbo | Java (266.0K) | 266.0K | 37 | 19 |
+| google/gson | Java (36.1K), HTML (23.2K) | 47.0K | 30 | 39 |
+| langchain-ai/langchain | Python (360.2K) | 361.9K | 22 | 16 |
+| tailwindlabs/tailwindcss | JavaScript (6.9K) | 6.9K | 20 | 8 |
+| mrdoob/three.js | JavaScript (452.8K), HTML (234.2K) | 687.0K | 18 | 31 |
+| coder/code-server | TypeScript (700.2K), JavaScript (45.5K) | 750.8K | 14 | 17 |
+| yt-dlp/yt-dlp | Python (211.5K) | 211.5K | 10 | 37 |
+| apolloconfig/apollo | Java (57.9K), JavaScript (14.3K), HTML (6.5K) | 78.6K | 6 | 50 |
+| google/guava | Java (518.4K) | 518.4K | 4 | 111 |
+| angular/angular | TypeScript (477.9K), JavaScript (160.3K) | 650.1K | 2 | 32 |
+| tensorflow/models | Python (203.6K), C++ (22.0K) | 239.5K | 2 | 378 |
+| Significant-Gravitas/AutoGPT | Python (10.3K) | 10.3K | 1 | 54 |

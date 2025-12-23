@@ -20,6 +20,7 @@ BENCHMARK_ORGS = {
     "swe_bench_pro": "Scale AI",
     "swe_bench_verified": "OpenAI",
     "swe_lancer": "OpenAI",
+    "swe_polybench": "Amazon",
 }
 
 

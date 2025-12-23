@@ -44,6 +44,10 @@ def process_eval_set(eval_set):
         dataset_name = "ScaleAI/SWE-bench_Pro"
         input_file = "swe_bench_pro_loc_stats.csv"
         output_file = "augmented/swe_bench_pro_loc_stats_augmented.csv"
+    elif eval_set == "polybench":
+        dataset_name = "AmazonScience/SWE-PolyBench"
+        input_file = "swe_polybench_loc_stats.csv"
+        output_file = "augmented/swe_polybench_loc_stats_augmented.csv"
     else:
         raise ValueError(f"Unknown eval_set: {eval_set}")
 
@@ -103,7 +107,7 @@ def main():
     parser = argparse.ArgumentParser(description="Augment SWE-bench LOC stats CSV files with patch statistics.")
     parser.add_argument(
         "--eval-set",
-        choices=["verified", "multilingual", "pro", "all"],
+        choices=["verified", "multilingual", "pro", "polybench", "all"],
         default="all",
         help="Type of SWE-bench dataset to process. Use 'all' to process all available CSV files."
     )
@@ -111,7 +115,7 @@ def main():
 
     if args.eval_set == "all":
         # Process all eval sets
-        eval_sets = ["verified", "multilingual", "pro"]
+        eval_sets = ["verified", "multilingual", "pro", "polybench"]
         for eval_set in eval_sets:
             process_eval_set(eval_set)
         print(f"\n{'='*60}")

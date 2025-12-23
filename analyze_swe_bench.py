@@ -74,7 +74,7 @@ def process_repository(repo_name, tasks):
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze LOC statistics for SWE-bench datasets.")
-    parser.add_argument("--eval-set", choices=["verified", "multilingual", "pro"], default="verified", help="Type of SWE-bench dataset to use.")
+    parser.add_argument("--eval-set", choices=["verified", "multilingual", "pro", "polybench"], default="verified", help="Type of SWE-bench dataset to use.")
     parser.add_argument("--max-workers", type=int, default=8, help="Number of parallel workers.")
     args = parser.parse_args()
 
@@ -87,6 +87,9 @@ def main():
     elif args.eval_set == "pro":
         dataset_name = "ScaleAI/SWE-bench_Pro"
         output_file = "swe_bench_pro_loc_stats.csv"
+    elif args.eval_set == "polybench":
+        dataset_name = "AmazonScience/SWE-PolyBench"
+        output_file = "swe_polybench_loc_stats.csv"
 
     check_scc_installed()
 
