@@ -2,6 +2,7 @@ import subprocess
 import os
 import json
 import csv
+import time
 from enum import Enum
 from collections import defaultdict
 
@@ -100,3 +101,25 @@ def write_loc_stats_csv(output_file, results, eval_set):
             writer.writerow(row)
 
     print(f"Wrote {len(results)} rows to {output_file}")
+
+
+def clone_repo_with_retry(repo_url, target_dir, max_retries=3):
+    """
+    Clones a repository with retry logic.
+    Uses --filter=blob:none for faster cloning.
+    """
+    for attempt in range(max_retries):
+        try:
+            subprocess.run(
+                ["git", "clone", "--filter=blob:none", repo_url, target_dir],
+                check=True,
+                capture_output=True # Silence git output to avoid messy logs
+            )
+            return
+        except subprocess.CalledProcessError as e:
+            if attempt < max_retries - 1:
+                print(f"Error cloning {repo_url} (attempt {attempt+1}/{max_retries}): {e}. Retrying in 5 seconds...")
+                time.sleep(5)
+            else:
+                raise e
+

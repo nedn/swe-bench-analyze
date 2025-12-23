@@ -8,7 +8,7 @@ from datasets import load_dataset
 import argparse
 
 
-from common import check_scc_installed, get_loc_counts, write_loc_stats_csv, EvalSet
+from common import check_scc_installed, get_loc_counts, write_loc_stats_csv, EvalSet, clone_repo_with_retry
 
 
 
@@ -34,11 +34,7 @@ def process_repository(repo_name, tasks):
             # This downloads the commit history (so we can checkout any SHA)
             # but doesn't download file contents until we actually checkout.
             # Much faster than a full clone.
-            subprocess.run(
-                ["git", "clone", "--filter=blob:none", repo_url, temp_dir],
-                check=True,
-                capture_output=True # Silence git output to avoid messy logs
-            )
+            clone_repo_with_retry(repo_url, temp_dir)
 
             # 2. Iterate through commits for this repo
             for task in tasks:
