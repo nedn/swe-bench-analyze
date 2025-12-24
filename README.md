@@ -1,5 +1,7 @@
 # SWE-bench LOC Analysis
 
+📊 **[View Complexity Report](reports/complexity_report.md)**
+
 A comprehensive toolkit for analyzing Lines of Code (LOC) across multiple SWE-bench-style benchmarks. For every repository and commit in each benchmark, the tools perform a git checkout and calculate LOC for target programming languages using the `scc` tool.
 
 ## Supported Benchmarks
