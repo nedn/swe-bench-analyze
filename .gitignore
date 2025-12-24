@@ -11,3 +11,5 @@ Multi-SWE-bench
 
 # Virtual environments
 .venv
+
+.claude
