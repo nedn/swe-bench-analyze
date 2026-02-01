@@ -48,6 +48,7 @@ Download the binary from the [scc releases page](https://github.com/boyter/scc/r
 ```bash
 uv sync
 ```
+`uv.lock` is committed to keep installs reproducible across machines.
 
 ## Usage
 
