@@ -19,6 +19,14 @@
                 const parsed = JSON.parse(value);
                 if (Array.isArray(parsed)) return parsed;
             } catch {
+                // Handle Python-style single-quoted lists: "['a', 'b']"
+                try {
+                    const fixed = value.replace(/'/g, '"');
+                    const parsed = JSON.parse(fixed);
+                    if (Array.isArray(parsed)) return parsed;
+                } catch {
+                    // Not a list format at all
+                }
                 return [value];
             }
             return [value];
