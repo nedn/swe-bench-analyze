@@ -2,7 +2,29 @@
 (function () {
     "use strict";
 
-    const data = SWE_BENCH_PRO_DATA;
+    const data = SWE_BENCH_PRO_DATA.map(d => ({
+        ...d,
+        issue_specificity: normalizeList(d.issue_specificity),
+        issue_categories: normalizeList(d.issue_categories),
+        selected_test_files_to_run: normalizeList(d.selected_test_files_to_run),
+        fail_to_pass: normalizeList(d.fail_to_pass),
+        pass_to_pass: normalizeList(d.pass_to_pass),
+    }));
+
+    function normalizeList(value) {
+        if (Array.isArray(value)) return value;
+        if (value == null || value === "") return [];
+        if (typeof value === "string") {
+            try {
+                const parsed = JSON.parse(value);
+                if (Array.isArray(parsed)) return parsed;
+            } catch {
+                return [value];
+            }
+            return [value];
+        }
+        return [value];
+    }
 
     // Precompute metadata
     const repos = [...new Set(data.map(d => d.repo))].sort();
