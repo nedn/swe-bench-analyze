@@ -212,7 +212,7 @@
                 body.innerHTML = `
                     <div class="section">
                         <div class="section-title">Problem Statement</div>
-                        <div class="section-content">${esc(d.problem_statement || "N/A")}</div>
+                        <div class="section-content">${renderMarkdown(d.problem_statement || "N/A")}</div>
                     </div>
                 `;
                 break;
@@ -221,7 +221,7 @@
                 body.innerHTML = `
                     <div class="section">
                         <div class="section-title">Requirements</div>
-                        <div class="section-content">${esc(d.requirements || "N/A")}</div>
+                        <div class="section-content">${renderMarkdown(d.requirements || "N/A")}</div>
                     </div>
                 `;
                 break;
@@ -230,7 +230,7 @@
                 body.innerHTML = `
                     <div class="section">
                         <div class="section-title">Interface</div>
-                        <div class="section-content">${esc(d.interface || "N/A")}</div>
+                        <div class="section-content">${renderMarkdown(d.interface || "N/A")}</div>
                     </div>
                 `;
                 break;
@@ -342,6 +342,17 @@
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;");
+    }
+
+    function renderMarkdown(str) {
+        if (str == null) return "";
+        // Replace literal \n sequences with actual newlines
+        const text = String(str).replace(/\\n/g, "\n");
+        if (typeof marked !== "undefined") {
+            return marked.parse(text);
+        }
+        // Fallback: escape HTML and convert newlines to <br>
+        return esc(text).replace(/\n/g, "<br>");
     }
 
     function shortId(instanceId) {
