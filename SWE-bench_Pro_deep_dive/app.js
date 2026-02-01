@@ -34,6 +34,32 @@
         return [value];
     }
 
+    // --- Patch stats ---
+    function parsePatchStats(patch) {
+        if (!patch) return { files: 0, additions: 0, deletions: 0 };
+        const lines = patch.split("\n");
+        const files = new Set();
+        let additions = 0;
+        let deletions = 0;
+        for (const line of lines) {
+            if (line.startsWith("diff --git ")) {
+                const match = line.match(/ b\/(.+)$/);
+                if (match) files.add(match[1]);
+            } else if (line.startsWith("+") && !line.startsWith("+++")) {
+                additions++;
+            } else if (line.startsWith("-") && !line.startsWith("---")) {
+                deletions++;
+            }
+        }
+        return { files: files.size, additions, deletions };
+    }
+
+    // Precompute patch stats and test counts on each item
+    data.forEach(d => {
+        d._patchStats = parsePatchStats(d.patch);
+        d._totalTests = (d.fail_to_pass || []).length + (d.pass_to_pass || []).length;
+    });
+
     // Precompute metadata
     const repos = [...new Set(data.map(d => d.repo))].sort();
     const languages = [...new Set(data.map(d => d.repo_language))].sort();
@@ -73,6 +99,17 @@
                                 ${languages.map(l => `<option value="${esc(l)}">${esc(l)}</option>`).join("")}
                             </select>
                         </div>
+                        <div class="filter-row">
+                            <select class="filter-select" id="sortSelect">
+                                <option value="">Default order</option>
+                                <option value="tests-desc">Most tests</option>
+                                <option value="tests-asc">Fewest tests</option>
+                                <option value="files-desc">Most files changed</option>
+                                <option value="files-asc">Fewest files changed</option>
+                                <option value="changes-desc">Largest changes</option>
+                                <option value="changes-asc">Smallest changes</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="nav-hint">
                         <span class="kbd">&uarr;</span> <span class="kbd">&darr;</span> navigate
@@ -92,6 +129,7 @@
         document.getElementById("searchBox").addEventListener("input", debounce(applyFilters, 200));
         document.getElementById("repoFilter").addEventListener("change", applyFilters);
         document.getElementById("langFilter").addEventListener("change", applyFilters);
+        document.getElementById("sortSelect").addEventListener("change", applyFilters);
         document.addEventListener("keydown", handleKeyDown);
 
         applyFilters();
@@ -102,6 +140,7 @@
         const query = document.getElementById("searchBox").value.toLowerCase().trim();
         const repo = document.getElementById("repoFilter").value;
         const lang = document.getElementById("langFilter").value;
+        const sort = document.getElementById("sortSelect").value;
 
         filteredData = data.filter(d => {
             if (repo && d.repo !== repo) return false;
@@ -122,6 +161,23 @@
             }
             return true;
         });
+
+        if (sort) {
+            const [field, dir] = sort.split("-");
+            const mult = dir === "desc" ? -1 : 1;
+            filteredData.sort((a, b) => {
+                let va, vb;
+                if (field === "tests") {
+                    va = a._totalTests; vb = b._totalTests;
+                } else if (field === "files") {
+                    va = a._patchStats.files; vb = b._patchStats.files;
+                } else {
+                    va = a._patchStats.additions + a._patchStats.deletions;
+                    vb = b._patchStats.additions + b._patchStats.deletions;
+                }
+                return (va - vb) * mult;
+            });
+        }
 
         selectedIndex = -1;
         renderList();
@@ -173,6 +229,8 @@
         const d = filteredData[selectedIndex];
         const langClass = getLangClass(d.repo_language);
         const ghUrl = `https://github.com/${d.repo}/commit/${d.base_commit}`;
+        const patchStats = d._patchStats;
+        const totalTests = d._totalTests;
 
         panel.innerHTML = `
             <div class="detail-header">
@@ -181,6 +239,12 @@
                     <span class="lang-badge ${langClass}">${esc(d.repo_language)}</span>
                     <span>Commit: <a href="${esc(ghUrl)}" target="_blank">${esc(d.base_commit.substring(0, 10))}</a></span>
                     <span>Instance: <code>${esc(d.instance_id)}</code></span>
+                </div>
+                <div class="detail-meta" style="margin-top: 6px;">
+                    <span>${totalTests} test${totalTests !== 1 ? "s" : ""}</span>
+                    <span>${patchStats.files} file${patchStats.files !== 1 ? "s" : ""} changed</span>
+                    <span style="color: var(--green)">+${patchStats.additions}</span>
+                    <span style="color: var(--red)">&minus;${patchStats.deletions}</span>
                 </div>
                 <div style="margin-top: 8px;">
                     <div class="tag-list">
